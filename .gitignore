@@ -21,3 +21,16 @@ dist-ssr
 *.sln
 *.sw?
 .env
+.env.local
+.env.*.local
+
+# AI/Metadata
+.bolt/
+.gemini/
+memory/
+GEMINI.md
+MEMORY.md
+
+# Production
+dist
+dist-ssr
