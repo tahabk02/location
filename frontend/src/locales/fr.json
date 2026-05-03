@@ -1,0 +1,37 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "cars": "Véhicules",
+    "features": "Services",
+    "gallery": "Galerie",
+    "client_space": "Espace Client",
+    "admin_space": "Espace Admin",
+    "logout": "Déconnexion"
+  },
+  "hero": {
+    "title": "Louez l'Excellence, Conduisez le Luxe",
+    "subtitle": "Découvrez notre flotte exclusive de véhicules premium pour vos déplacements au Maroc.",
+    "cta": "Réserver maintenant"
+  },
+  "gallery": {
+    "title": "Galerie photo & vidéo",
+    "subtitle": "Découvrez plus de photos de nos véhicules de luxe et une vidéo immersive."
+  },
+  "features": {
+    "title": "Services Premium",
+    "subtitle": "Une expérience de location sur mesure pour vos besoins les plus exigeants."
+  },
+  "cars": {
+    "title": "Notre Flotte Exclusive",
+    "subtitle": "Performance, confort et prestige à chaque trajet.",
+    "view_details": "Voir détails",
+    "book_now": "Réserver"
+  },
+  "footer": {
+    "about": "Leader de la location de véhicules premium au Maroc.",
+    "address": "Adresse",
+    "phone": "Téléphone",
+    "email": "Email",
+    "rights": "Tous droits réservés."
+  }
+}

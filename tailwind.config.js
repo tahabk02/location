@@ -1,0 +1,18 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: [
+    './frontend/index.html',
+    './frontend/src/**/*.{js,ts,jsx,tsx}',
+  ],
+  darkMode: 'class',
+  theme: {
+    extend: {
+      animation: {
+        'gradient': 'gradient 8s ease infinite',
+        'blob': 'blob 15s ease-in-out infinite',
+        'float': 'float 6s ease-in-out infinite',
+      },
+    },
+  },
+  plugins: [],
+};

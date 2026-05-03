@@ -1,0 +1,37 @@
+{
+  "nav": {
+    "home": "Home",
+    "cars": "Vehicles",
+    "features": "Services",
+    "gallery": "Gallery",
+    "client_space": "Client Space",
+    "admin_space": "Admin Space",
+    "logout": "Logout"
+  },
+  "hero": {
+    "title": "Rent Excellence, Drive Luxury",
+    "subtitle": "Discover our exclusive fleet of premium vehicles for your travels in Morocco.",
+    "cta": "Book Now"
+  },
+  "gallery": {
+    "title": "Photo & Video Gallery",
+    "subtitle": "Discover more photos of our luxury vehicles and an immersive video."
+  },
+  "features": {
+    "title": "Premium Services",
+    "subtitle": "A tailored rental experience for your most demanding needs."
+  },
+  "cars": {
+    "title": "Our Exclusive Fleet",
+    "subtitle": "Performance, comfort, and prestige in every journey.",
+    "view_details": "View Details",
+    "book_now": "Book Now"
+  },
+  "footer": {
+    "about": "Leader in premium vehicle rental in Morocco.",
+    "address": "Address",
+    "phone": "Phone",
+    "email": "Email",
+    "rights": "All rights reserved."
+  }
+}
