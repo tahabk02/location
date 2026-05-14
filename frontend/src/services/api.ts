@@ -1,6 +1,6 @@
 import type { Car, Reservation, User } from "../types";
 
-const API_URL = "/api";
+const API_URL = "/_/backend/api";
 
 async function handleResponse(response: Response) {
   const json = await response.json().catch(() => null);
