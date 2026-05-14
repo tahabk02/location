@@ -100,10 +100,10 @@ export function LoginPage() {
           
           <div className="text-center mb-10">
             <motion.div 
-              whileHover={{ rotate: 360, scale: 1.1 }}
-              className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-to-br from-blue-600 to-indigo-600 mb-6 shadow-lg shadow-blue-500/20"
+              whileHover={{ scale: 1.05 }}
+              className="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-white p-2 mb-6 shadow-xl shadow-blue-500/10 border border-white/10"
             >
-              <Car className="text-white w-10 h-10" />
+              <img src="/logo.jpeg" alt="Logo" className="w-full h-full object-contain mix-blend-multiply rounded-2xl" />
             </motion.div>
             <h2 className="text-4xl font-black text-white tracking-tight mb-2">
               {isLogin ? t("auth.login_title") : t("auth.register_title")}
