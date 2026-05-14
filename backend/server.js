@@ -1,6 +1,10 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
+import mongoSanitize from "express-mongo-sanitize";
+import compression from "compression";
 import { connectDB } from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import carRoutes from "./routes/carRoutes.js";
@@ -26,10 +30,23 @@ dotenv.config({ path: path.join(__dirname, "../.env") });
 const app = express();
 const port = process.env.PORT ?? 4000;
 
+// Security Middleware
+app.use(helmet()); // Basic security headers
+app.use(mongoSanitize()); // Prevent NoSQL injection
+app.use(compression()); // Compress responses for better performance
+
+// Rate Limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 1000, // limit each IP to 1000 requests per windowMs (high for development, adjust for production)
+  message: "Too many requests from this IP, please try again after 15 minutes"
+});
+app.use("/api", limiter);
+
 // Middleware
 app.use(cors({ origin: "*" }));
-app.use(express.json({ limit: "50mb" })); // Increase limit for Base64 images
-app.use(express.urlencoded({ limit: "50mb", extended: true }));
+app.use(express.json({ limit: "10mb" })); // Reduced limit for better security, adjust if necessary
+app.use(express.urlencoded({ limit: "10mb", extended: true }));
 
 // Routes
 app.use("/api/auth", authRoutes);
