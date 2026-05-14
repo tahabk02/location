@@ -239,7 +239,7 @@ export const Hero: React.FC<HeroProps> = ({ onBook, onExplore, isMobile }) => {
     <section
       ref={heroRef}
       id="hero"
-      className={`relative min-h-screen lg:h-screen flex items-center justify-center overflow-hidden transition-colors duration-1000 ${
+      className={`relative min-h-screen lg:h-screen flex items-start lg:items-center justify-center overflow-hidden transition-colors duration-1000 ${
         theme === 'light' ? 'bg-white' : 'bg-gradient-to-br from-gray-950 via-black to-gray-950'
       }`}
     >
@@ -314,7 +314,7 @@ export const Hero: React.FC<HeroProps> = ({ onBook, onExplore, isMobile }) => {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-12 lg:py-32 relative z-20">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-44 pb-12 lg:py-32 relative z-20">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-20 items-center">
           <div className="space-y-4 sm:space-y-10 order-2 lg:order-1">
             <div className="flex flex-row items-center justify-between gap-4 mb-2 sm:mb-8">
