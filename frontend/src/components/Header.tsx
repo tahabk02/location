@@ -113,7 +113,7 @@ export const Header: React.FC<HeaderProps> = ({ user }) => {
   const languages = useMemo(() => [
     { code: "fr", label: "Français", flag: "FR" },
     { code: "en", label: "English", flag: "EN" },
-    { code: "ar", label: "العربية", flag: "AR" },
+    { code: "ar", label: "الدارجة", flag: "AR" },
   ], []);
 
   const handleNavClick = useCallback((id: string) => {
