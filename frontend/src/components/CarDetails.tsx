@@ -649,13 +649,13 @@ export const CarDetails: React.FC<CarDetailsProps> = ({
                   </p>
                 </div>
 
-                {/* Tabs Navigation - Fluid */}
-                <div className="flex overflow-x-auto no-scrollbar gap-2 p-1.5 bg-gray-100 dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700">
+                {/* Tabs Navigation - Fluid Horizontal Scroll */}
+                <div className="flex items-center overflow-x-auto scrollbar-hide gap-0 p-1.5 bg-gray-100 dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 whitespace-nowrap">
                   {tabs.map((tab) => (
                     <button
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id)}
-                      className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap ${
+                      className={`flex items-center gap-2 px-6 mx-1 py-3 rounded-xl text-sm sm:text-base font-black uppercase tracking-widest transition-all flex-shrink-0 ${
                         activeTab === tab.id
                           ? "bg-white dark:bg-gray-700 text-blue-600 shadow-md scale-[1.02]"
                           : "text-gray-500 hover:text-gray-900 dark:hover:text-white"
