@@ -239,7 +239,7 @@ export const Hero: React.FC<HeroProps> = ({ onBook, onExplore, isMobile }) => {
     <section
       ref={heroRef}
       id="hero"
-      className={`relative min-h-screen flex items-center justify-center overflow-hidden transition-colors duration-1000 ${
+      className={`relative h-[100dvh] lg:min-h-screen flex items-center justify-center overflow-hidden transition-colors duration-1000 ${
         theme === 'light' ? 'bg-white' : 'bg-gradient-to-br from-gray-950 via-black to-gray-950'
       }`}
     >
@@ -247,7 +247,7 @@ export const Hero: React.FC<HeroProps> = ({ onBook, onExplore, isMobile }) => {
       <div className={`absolute inset-0 transition-all duration-2000 ${getTimeOfDayGradient()} z-0`} />
 
       {/* Advanced Holographic Interface */}
-      <div className={`absolute inset-0 z-10 transition-all duration-1000 ${showInterface ? "opacity-100" : "opacity-0"}`}>
+      <div className={`absolute inset-0 z-10 transition-all duration-1000 ${showInterface ? "opacity-100" : "opacity-0"} hidden sm:block`}>
         <div className="absolute inset-0 perspective-2000">
           <div
             className={`absolute inset-0 ${theme === 'light' ? 'bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.05)_0%,transparent_50%)]' : 'bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.1)_0%,transparent_50%)]'}`}
@@ -284,7 +284,7 @@ export const Hero: React.FC<HeroProps> = ({ onBook, onExplore, isMobile }) => {
       </div>
 
       {/* Quantum Particles System */}
-      <div className="absolute inset-0 overflow-hidden">
+      <div className="absolute inset-0 overflow-hidden hidden sm:block">
         {quantumParticles.map((particle) => (
           <div
             key={particle.id}
@@ -303,7 +303,7 @@ export const Hero: React.FC<HeroProps> = ({ onBook, onExplore, isMobile }) => {
       </div>
 
       {/* Dynamic Light Beams */}
-      <div className="absolute inset-0 overflow-hidden">
+      <div className="absolute inset-0 overflow-hidden hidden md:block">
         {Array.from({ length: 8 }).map((_, i) => (
           <div
             key={i}
@@ -314,10 +314,10 @@ export const Hero: React.FC<HeroProps> = ({ onBook, onExplore, isMobile }) => {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20 lg:py-32 relative z-20">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-          <div className="space-y-6 sm:space-y-10 order-2 lg:order-1">
-            <div className="flex flex-row items-center justify-between gap-4 mb-4 sm:mb-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12 lg:py-32 relative z-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-20 items-center">
+          <div className="space-y-4 sm:space-y-10 order-2 lg:order-1">
+            <div className="flex flex-row items-center justify-between gap-4 mb-2 sm:mb-8">
               <div className="flex items-center gap-2 sm:gap-4">
                 <div className="relative group">
                   <div className={`p-2 sm:p-3 rounded-xl sm:rounded-2xl backdrop-blur-xl border transition-colors ${theme === 'light' ? 'bg-white/60 border-blue-100 text-blue-600' : 'bg-gray-900/50 border-gray-800/50 text-amber-400'}`}>
@@ -327,7 +327,7 @@ export const Hero: React.FC<HeroProps> = ({ onBook, onExplore, isMobile }) => {
                 <div className={`px-3 py-2 sm:px-4 sm:py-3 rounded-xl sm:rounded-2xl backdrop-blur-xl border transition-colors ${theme === 'light' ? 'bg-white/60 border-blue-100' : 'bg-gray-900/50 border-gray-800/50'}`}>
                   <div className="flex items-center gap-2 sm:gap-3">
                     <Volume2 className={`w-3 h-3 sm:w-4 sm:h-4 ${theme === 'light' ? 'text-blue-600' : 'text-blue-400'}`} />
-                    <div className={`w-16 sm:w-24 h-1 rounded-full overflow-hidden ${theme === 'light' ? 'bg-blue-50' : 'bg-gray-800'}`}>
+                    <div className={`w-12 sm:w-24 h-1 rounded-full overflow-hidden ${theme === 'light' ? 'bg-blue-50' : 'bg-gray-800'}`}>
                       <div className="h-full bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full transition-all duration-300" style={{ width: `${ambientSound}%` }} />
                     </div>
                   </div>
@@ -341,72 +341,72 @@ export const Hero: React.FC<HeroProps> = ({ onBook, onExplore, isMobile }) => {
             <div className="relative">
               <div className={`absolute -inset-4 rounded-3xl blur-2xl ${theme === 'light' ? 'bg-blue-600/5' : 'bg-gradient-to-r from-blue-600/10 via-cyan-600/10 to-purple-600/10'}`} />
               <div className="relative max-w-3xl text-center lg:text-left">
-                <div className="flex items-center justify-center lg:justify-start gap-3 mb-4 sm:mb-6">
+                <div className="flex items-center justify-center lg:justify-start gap-3 mb-2 sm:mb-6">
                   <div className={`px-3 py-1 sm:px-4 sm:py-1.5 rounded-full border backdrop-blur-md ${theme === 'light' ? 'bg-blue-600/5 border-blue-100' : 'bg-red-600/10 border-red-500/30'}`}>
-                    <span className={`${theme === 'light' ? 'text-blue-600' : 'text-red-500'} text-[10px] sm:text-xs font-black tracking-[0.2em] uppercase animate-pulse`}>Premium Ultra Pro</span>
+                    <span className={`${theme === 'light' ? 'text-blue-600' : 'text-red-500'} text-[8px] sm:text-xs font-black tracking-[0.2em] uppercase animate-pulse`}>Premium Ultra Pro</span>
                   </div>
                 </div>
-                <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold leading-[1.1] lg:leading-[0.95] mb-4 sm:mb-6">
+                <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold leading-[1.1] lg:leading-[0.95] mb-2 sm:mb-6">
                   <span className="bg-gradient-to-r from-blue-600 via-indigo-500 to-violet-600 bg-clip-text text-transparent uppercase" style={{ backgroundSize: "200% auto", animation: "hologram 3s ease-in-out infinite" }}>
                     {t("hero.title").includes(",") ? t("hero.title").split(",")[0] : t("hero.title")}
                   </span>
                 </h1>
-                <p className={`text-base sm:text-xl lg:text-2xl font-light tracking-wide leading-relaxed ${theme === 'light' ? 'text-gray-600' : 'text-gray-300'}`}>{t("hero.subtitle")}</p>
+                <p className={`text-sm sm:text-xl lg:text-2xl font-light tracking-wide leading-relaxed ${theme === 'light' ? 'text-gray-600' : 'text-gray-300'}`}>{t("hero.subtitle")}</p>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mt-8 sm:mt-12">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4 mt-4 sm:mt-12">
               {[
                 { label: t("hero.stats.speed"), value: carSpeed, unit: "km/h", icon: Gauge, color: "from-red-500 to-orange-500", progress: (carSpeed/320)*100 },
                 { label: t("hero.stats.energy"), value: energyLevel, unit: "%", icon: BatteryCharging, color: "from-green-500 to-emerald-500", progress: energyLevel },
                 { label: t("hero.stats.temp"), value: "22", unit: "°C", icon: Thermometer, color: "from-cyan-500 to-blue-500", progress: 70 },
               ].map((stat, i) => (
-                <div key={i} className={`relative p-3 sm:p-5 rounded-xl sm:rounded-2xl backdrop-blur-lg border transition-all ${theme === 'light' ? 'bg-white border-blue-50 shadow-xl' : 'bg-gray-900/30 border-gray-800/50'} ${i === 2 ? 'col-span-2 sm:col-span-1' : ''}`}>
-                  <div className="flex items-center justify-between mb-2 sm:mb-3">
-                    <div className={`p-1.5 sm:p-2 rounded-lg bg-gradient-to-r ${stat.color}`}><stat.icon className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-white" /></div>
-                    <span className="text-[8px] sm:text-[10px] font-black uppercase text-gray-400">{stat.label}</span>
+                <div key={i} className={`relative p-2 sm:p-5 rounded-xl sm:rounded-2xl backdrop-blur-lg border transition-all ${theme === 'light' ? 'bg-white border-blue-50 shadow-xl' : 'bg-gray-900/30 border-gray-800/50'} ${i === 2 ? 'col-span-2 lg:col-span-1' : ''}`}>
+                  <div className="flex items-center justify-between mb-1 sm:mb-3">
+                    <div className={`p-1 sm:p-2 rounded-lg bg-gradient-to-r ${stat.color}`}><stat.icon className="w-3 h-3 sm:w-5 sm:h-5 text-white" /></div>
+                    <span className="text-[7px] sm:text-[10px] font-black uppercase text-gray-400">{stat.label}</span>
                   </div>
-                  <div className={`text-xl sm:text-3xl font-black ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>{stat.value}<span className="text-[10px] sm:text-xs ml-1 text-gray-500">{stat.unit}</span></div>
+                  <div className={`text-lg sm:text-3xl font-black ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>{stat.value}<span className="text-[8px] sm:text-xs ml-1 text-gray-500">{stat.unit}</span></div>
                 </div>
               ))}
             </div>
             
-            <div className="mt-8 lg:mt-10">
-              <div className={`p-6 sm:p-8 rounded-[2rem] sm:rounded-[3rem] backdrop-blur-xl border ${theme === 'light' ? 'bg-white/80 border-blue-50 shadow-2xl' : 'bg-gray-900/40 border-gray-800/50'}`}>
-                <div className="grid grid-cols-3 gap-3 sm:gap-4">
+            <div className="mt-4 lg:mt-10">
+              <div className={`p-4 sm:p-8 rounded-3xl sm:rounded-[3rem] backdrop-blur-xl border ${theme === 'light' ? 'bg-white/80 border-blue-50 shadow-2xl' : 'bg-gray-900/40 border-gray-800/50'}`}>
+                <div className="grid grid-cols-3 gap-2 sm:gap-4">
                    {[Navigation, Bluetooth, Satellite, Wind, Droplets, Cloud].map((Icon, i) => (
-                     <button key={i} className={`p-3 sm:p-4 rounded-xl sm:rounded-2xl border transition-all flex items-center justify-center ${theme === 'light' ? 'bg-blue-50 border-blue-100 text-blue-600' : 'bg-blue-900/20 border-blue-500/30 text-blue-400'}`}>
-                       <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
+                     <button key={i} className={`p-2 sm:p-4 rounded-xl sm:rounded-2xl border transition-all flex items-center justify-center ${theme === 'light' ? 'bg-blue-50 border-blue-100 text-blue-600' : 'bg-blue-900/20 border-blue-500/30 text-blue-400'}`}>
+                       <Icon className="w-4 h-4 sm:w-6 sm:h-6" />
                      </button>
                    ))}
                 </div>
-                <div className="mt-6 sm:mt-8 flex justify-center gap-4 sm:gap-6">
-                   <button className="p-3 sm:p-4 bg-gray-100 dark:bg-gray-800 rounded-full"><SkipBack size={20} /></button>
-                   <button onClick={handlePlaySound} className="p-4 sm:p-6 bg-blue-600 text-white rounded-full shadow-xl">{isPlaying ? <Pause size={20} /> : <Play size={20} />}</button>
-                   <button className="p-3 sm:p-4 bg-gray-100 dark:bg-gray-800 rounded-full"><SkipForward size={20} /></button>
+                <div className="mt-4 sm:mt-8 flex justify-center gap-4 sm:gap-6">
+                   <button className="p-2 sm:p-4 bg-gray-100 dark:bg-gray-800 rounded-full"><SkipBack size={16} className="sm:w-5 sm:h-5" /></button>
+                   <button onClick={handlePlaySound} className="p-3 sm:p-6 bg-blue-600 text-white rounded-full shadow-xl">{isPlaying ? <Pause size={16} className="sm:w-5 sm:h-5" /> : <Play size={16} className="sm:w-5 sm:h-5" />}</button>
+                   <button className="p-2 sm:p-4 bg-gray-100 dark:bg-gray-800 rounded-full"><SkipForward size={16} className="sm:w-5 sm:h-5" /></button>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="relative order-1 lg:order-2 mt-12 lg:mt-0">
-            <div className="absolute -top-12 sm:-top-20 left-1/2 -translate-x-1/2 flex gap-2 sm:gap-4 z-30 w-full justify-center">
+          <div className="relative order-1 lg:order-2 mt-4 lg:mt-0">
+            <div className="absolute -top-8 sm:-top-20 left-1/2 -translate-x-1/2 flex gap-2 sm:gap-4 z-30 w-full justify-center">
               {currentCars.map((car, i) => (
-                <button key={car._id || i} onClick={() => setActiveCar(i)} className={`w-14 h-14 sm:w-20 sm:h-20 rounded-xl sm:rounded-2xl overflow-hidden border-2 sm:border-4 transition-all ${activeCar === i ? 'border-blue-600 scale-110 shadow-2xl' : 'border-white/10 opacity-50'}`}>
+                <button key={car._id || i} onClick={() => setActiveCar(i)} className={`w-10 h-10 sm:w-20 sm:h-20 rounded-lg sm:rounded-2xl overflow-hidden border sm:border-4 transition-all ${activeCar === i ? 'border-blue-600 scale-110 shadow-2xl' : 'border-white/10 opacity-50'}`}>
                   <img src={car.image || car.images?.[0]} className="w-full h-full object-cover" alt={car.name} />
                 </button>
               ))}
             </div>
-            <div className={`relative rounded-[2rem] sm:rounded-[4rem] overflow-hidden border-2 sm:border-4 transition-all ${theme === 'light' ? 'bg-white border-blue-50 shadow-3xl' : 'bg-black border-blue-600/20'}`}>
-               <img src={activeCarData.image || activeCarData.images?.[0]} className="w-full h-[300px] sm:h-[500px] object-cover" alt={activeCarData.name} />
-               <div className="absolute bottom-6 left-6 sm:bottom-10 sm:left-10">
-                  <h3 className="text-2xl sm:text-5xl font-black text-white uppercase tracking-tighter drop-shadow-2xl">{activeCarData.brand} {activeCarData.model}</h3>
-                  <p className="text-blue-400 font-black text-lg sm:text-2xl uppercase">{activeCarData.pricePerDay} DH / JOUR</p>
+            <div className={`relative rounded-3xl sm:rounded-[4rem] overflow-hidden border sm:border-4 transition-all ${theme === 'light' ? 'bg-white border-blue-50 shadow-3xl' : 'bg-black border-blue-600/20'}`}>
+               <img src={activeCarData.image || activeCarData.images?.[0]} className="w-full h-[220px] sm:h-[500px] object-cover" alt={activeCarData.name} />
+               <div className="absolute bottom-4 left-4 sm:bottom-10 sm:left-10">
+                  <h3 className="text-xl sm:text-5xl font-black text-white uppercase tracking-tighter drop-shadow-2xl">{activeCarData.brand} {activeCarData.model}</h3>
+                  <p className="text-blue-400 font-black text-sm sm:text-2xl uppercase">{activeCarData.pricePerDay} DH / JOUR</p>
                </div>
             </div>
-            <div className="absolute -bottom-6 sm:-bottom-10 left-0 right-0 lg:left-auto lg:right-10 flex justify-center lg:justify-end gap-3 sm:gap-4 px-4 sm:px-0">
-               <button onClick={() => onExplore(activeCarData._id)} className="flex-1 lg:flex-none px-6 sm:px-10 py-4 sm:py-5 bg-white text-blue-600 font-black rounded-2xl sm:rounded-3xl shadow-2xl uppercase tracking-widest text-[10px] sm:text-xs">Explorer</button>
-               <button onClick={() => onBook(activeCarData._id)} className="flex-1 lg:flex-none px-8 sm:px-12 py-4 sm:py-5 bg-blue-600 text-white font-black rounded-2xl sm:rounded-3xl shadow-2xl uppercase tracking-widest text-[10px] sm:text-xs">Réserver</button>
+            <div className="absolute -bottom-4 sm:-bottom-10 left-0 right-0 lg:left-auto lg:right-10 flex justify-center lg:justify-end gap-2 sm:gap-4 px-4 sm:px-0">
+               <button onClick={() => onExplore(activeCarData._id)} className="flex-1 lg:flex-none px-4 sm:px-10 py-3 sm:py-5 bg-white text-blue-600 font-black rounded-xl sm:rounded-3xl shadow-2xl uppercase tracking-widest text-[8px] sm:text-xs">Explorer</button>
+               <button onClick={() => onBook(activeCarData._id)} className="flex-1 lg:flex-none px-6 sm:px-12 py-3 sm:py-5 bg-blue-600 text-white font-black rounded-xl sm:rounded-3xl shadow-2xl uppercase tracking-widest text-[8px] sm:text-xs">Réserver</button>
             </div>
           </div>
         </div>

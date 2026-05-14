@@ -121,21 +121,27 @@ export function HomePage() {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
+    // Failsafe: Automatically skip intro after 10 seconds even if video fails
+    const failsafe = setTimeout(() => {
+      if (showIntro) handleSkipIntro();
+    }, 10000);
+
     if (showIntro && videoRef.current) {
       const video = videoRef.current;
       video.muted = true;
-      video.setAttribute("muted", ""); // Double ensure for mobile
-      video.setAttribute("playsinline", "");
+      video.defaultMuted = true; // Essential for some browsers
       
       const playPromise = video.play();
       if (playPromise !== undefined) {
         playPromise.catch(err => {
-          console.log("Autoplay prevented:", err);
-          // If blocked, we still want to show the video but might need a "Play" button fallback
-          // For now, we'll just log it.
+          console.log("Autoplay blocked:", err);
+          // If blocked, we skip immediately to not stay stuck
+          handleSkipIntro();
         });
       }
     }
+
+    return () => clearTimeout(failsafe);
   }, [showIntro]);
 
   const handleVideoProgress = (e: React.SyntheticEvent<HTMLVideoElement>) => {
@@ -191,81 +197,55 @@ export function HomePage() {
             exit={{ opacity: 0, scale: 1.1, filter: "blur(40px)" }}
             transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
             className="fixed inset-0 z-[200] bg-black flex items-center justify-center overflow-hidden"
+            onClick={handleSkipIntro} // Tap anywhere to skip if stuck
           >
             {/* Ambient background glow */}
             <div className="absolute inset-0 z-0 bg-black">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,0,0,0.1)_0%,transparent_70%)] animate-pulse" />
-              <video
-                ref={videoRef}
-                autoPlay
-                muted
-                playsInline
-                loop
-                preload="auto"
-                onEnded={handleSkipIntro}
-                onTimeUpdate={handleVideoProgress}
-                className="w-full h-full object-cover relative z-10"
-                style={{ pointerEvents: 'none' }} // Disable right click/interactions
-              >
-                <source src="/intro.mp4" type="video/mp4" />
-              </video>
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,0,0,0.15)_0%,transparent_70%)] animate-pulse" />
+              
+              {/* Native video for better mobile support */}
+              <div 
+                className="w-full h-full"
+                dangerouslySetInnerHTML={{
+                  __html: `
+                    <video
+                      autoplay
+                      muted
+                      loop
+                      playsinline
+                      preload="auto"
+                      class="w-full h-full object-cover relative z-10"
+                      style="pointer-events: none;"
+                    >
+                      <source src="/intro.mp4" type="video/mp4" />
+                    </video>
+                  `
+                }}
+              />
             </div>
 
             {/* Cinematic Overlay UI */}
-            <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-20 w-full max-w-md px-8">
+            <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-20 w-full max-w-md px-8 pointer-events-none">
               <div className="flex flex-col items-center gap-6">
-                {/* Progress Bar Container */}
-                <div className="w-full h-[2px] bg-gray-100 rounded-full overflow-hidden relative">
-                  <motion.div 
-                    className="absolute inset-y-0 left-0 bg-red-600 shadow-[0_0_10px_rgba(220,38,38,0.5)]"
-                    style={{ width: `${introProgress}%` }}
-                    transition={{ type: "spring", stiffness: 50, damping: 20 }}
-                  />
-                </div>
-                
                 {/* Brand Badge */}
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1 }}
+                  transition={{ delay: 0.5 }}
                   className="flex items-center gap-3"
                 >
                   <span className="text-[10px] font-black tracking-[0.4em] uppercase text-gray-400">
                     AVENIR KAMIL <span className="text-red-600">CAR</span>
                   </span>
                   <div className="h-1 w-1 rounded-full bg-red-600 animate-ping" />
-                  <span className="text-[10px] font-black tracking-[0.4em] uppercase text-gray-400">
-                    PREMIUM
-                  </span>
                 </motion.div>
+                <p className="text-[8px] text-gray-500 font-bold uppercase tracking-widest animate-pulse">Appuyez pour passer</p>
               </div>
             </div>
 
-            {/* Premium Skip Button */}
-            <motion.button
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 2.5, duration: 0.8 }}
-              onClick={handleSkipIntro}
-              className="absolute top-12 right-12 z-20 group"
-            >
-              <div className="flex items-center gap-4">
-                <div className="text-right">
-                  <div className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 group-hover:text-red-600 transition-colors">Passer</div>
-                  <div className="text-[8px] font-bold uppercase tracking-[0.1em] text-gray-300">L'expérience</div>
-                </div>
-                <div className="relative">
-                  <div className="absolute inset-0 bg-red-600/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <div className="relative p-4 rounded-full border border-gray-100 group-hover:border-red-600 transition-all duration-500 group-hover:rotate-90">
-                    <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-red-600" />
-                  </div>
-                </div>
-              </div>
-            </motion.button>
-
             {/* Cinematic Letterbox Effects */}
-            <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-white to-transparent opacity-40 pointer-events-none" />
-            <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-white to-transparent opacity-40 pointer-events-none" />
+            <div className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-b from-black to-transparent opacity-60 pointer-events-none" />
+            <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-black to-transparent opacity-60 pointer-events-none" />
           </motion.div>
         )}
       </AnimatePresence>
