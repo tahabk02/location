@@ -78,7 +78,7 @@ export function HomePage() {
     restDelta: 0.001,
   });
 
-  const headerY = useTransform(scrollY, [0, 100], [0, -50]);
+  const headerY = useTransform(scrollY, [0, 100], [0, 0]);
   const headerOpacity = useTransform(scrollY, [0, 50], [1, 0.95]);
 
   useEffect(() => {
