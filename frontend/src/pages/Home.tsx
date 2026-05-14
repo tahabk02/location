@@ -122,9 +122,19 @@ export function HomePage() {
 
   useEffect(() => {
     if (showIntro && videoRef.current) {
-      videoRef.current.play().catch(err => {
-        console.log("Autoplay blocked, user interaction might be needed", err);
-      });
+      const video = videoRef.current;
+      video.muted = true;
+      video.setAttribute("muted", ""); // Double ensure for mobile
+      video.setAttribute("playsinline", "");
+      
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(err => {
+          console.log("Autoplay prevented:", err);
+          // If blocked, we still want to show the video but might need a "Play" button fallback
+          // For now, we'll just log it.
+        });
+      }
     }
   }, [showIntro]);
 
