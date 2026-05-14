@@ -239,7 +239,7 @@ export const Hero: React.FC<HeroProps> = ({ onBook, onExplore, isMobile }) => {
     <section
       ref={heroRef}
       id="hero"
-      className={`relative min-h-screen lg:h-screen flex items-start lg:items-center justify-center overflow-hidden transition-colors duration-1000 ${
+      className={`relative min-h-screen flex items-center justify-center overflow-hidden transition-colors duration-1000 ${
         theme === 'light' ? 'bg-white' : 'bg-gradient-to-br from-gray-950 via-black to-gray-950'
       }`}
     >
@@ -314,7 +314,7 @@ export const Hero: React.FC<HeroProps> = ({ onBook, onExplore, isMobile }) => {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-44 pb-12 lg:py-32 relative z-20">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-56 pb-20 lg:py-32 relative z-20">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-20 items-center">
           <div className="space-y-4 sm:space-y-10 order-2 lg:order-1">
             <div className="flex flex-row items-center justify-between gap-4 mb-2 sm:mb-8">
@@ -389,24 +389,34 @@ export const Hero: React.FC<HeroProps> = ({ onBook, onExplore, isMobile }) => {
             </div>
           </div>
 
-          <div className="relative order-1 lg:order-2 mt-12 lg:mt-0 flex flex-col items-center">
-            {/* Thumbnails Container - Moved to Relative to avoid overlap */}
-            <div className="relative flex gap-2 sm:gap-4 z-30 mb-4 sm:mb-8 justify-center overflow-hidden p-2">
+          <div className="relative order-1 lg:order-2 mt-8 lg:mt-0 flex flex-col items-center w-full">
+            {/* Thumbnails Container */}
+            <div className="relative flex gap-2 sm:gap-4 z-30 mb-6 sm:mb-10 justify-center overflow-hidden p-1 w-full">
               {currentCars.map((car, i) => (
-                <button key={car._id || i} onClick={() => setActiveCar(i)} className={`w-12 h-12 sm:w-20 sm:h-20 rounded-lg sm:rounded-2xl overflow-hidden border sm:border-4 transition-all ${activeCar === i ? 'border-blue-600 scale-110 shadow-2xl' : 'border-white/10 opacity-50'}`}>
+                <button key={car._id || i} onClick={() => setActiveCar(i)} className={`w-12 h-12 sm:w-24 sm:h-24 rounded-xl sm:rounded-[2rem] overflow-hidden border-2 sm:border-4 transition-all duration-500 ${activeCar === i ? 'border-blue-600 scale-110 shadow-2xl shadow-blue-500/40' : 'border-white/10 opacity-40 hover:opacity-100'}`}>
                   <img src={car.image || car.images?.[0]} className="w-full h-full object-cover" alt={car.name} />
                 </button>
               ))}
             </div>
             
-            <div className={`relative w-full rounded-3xl sm:rounded-[4rem] overflow-hidden border sm:border-4 transition-all ${theme === 'light' ? 'bg-white border-blue-50 shadow-3xl' : 'bg-black border-blue-600/20'}`}>
-               <img src={activeCarData.image || activeCarData.images?.[0]} className="w-full h-[200px] sm:h-[500px] object-cover" alt={activeCarData.name} />
-               <div className="absolute bottom-4 left-4 sm:bottom-10 sm:left-10">
-                  <h3 className="text-xl sm:text-5xl font-black text-white uppercase tracking-tighter drop-shadow-2xl">{activeCarData.brand} {activeCarData.model}</h3>
-                  <p className="text-blue-400 font-black text-sm sm:text-2xl uppercase">{activeCarData.pricePerDay} DH / JOUR</p>
+            {/* Main Image Card - Mobile Optimized Height */}
+            <div className={`relative w-full rounded-[2rem] sm:rounded-[4rem] overflow-hidden border sm:border-8 transition-all duration-700 ${theme === 'light' ? 'bg-white border-white shadow-3xl' : 'bg-gray-900/50 border-gray-800/50 shadow-2xl shadow-blue-900/20'}`}>
+               <img src={activeCarData.image || activeCarData.images?.[0]} className="w-full h-[220px] sm:h-[550px] object-cover" alt={activeCarData.name} />
+               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent sm:from-black/60" />
+               <div className="absolute bottom-4 left-6 sm:bottom-12 sm:left-12">
+                  <h3 className="text-2xl sm:text-6xl font-black text-white uppercase tracking-tighter drop-shadow-2xl mb-1 sm:mb-2">{activeCarData.brand} <span className="text-blue-500">{activeCarData.model}</span></h3>
+                  <div className="flex items-center gap-2 sm:gap-4">
+                    <p className="text-blue-400 font-black text-sm sm:text-3xl uppercase tracking-tighter">{activeCarData.pricePerDay} DH <span className="text-[8px] sm:text-sm text-white/60">/ JOUR</span></p>
+                    <div className="h-4 sm:h-8 w-px bg-white/20" />
+                    <div className="flex items-center gap-1">
+                      <Star className="w-3 h-3 sm:w-5 sm:h-5 fill-yellow-400 text-yellow-400" />
+                      <span className="text-[10px] sm:text-xl font-black text-white">4.9</span>
+                    </div>
+                  </div>
                </div>
             </div>
-            <div className="absolute -bottom-4 sm:-bottom-10 left-0 right-0 lg:left-auto lg:right-10 flex justify-center lg:justify-end gap-2 sm:gap-4 px-4 sm:px-0">
+            
+            <div className="absolute -bottom-6 sm:-bottom-12 left-0 right-0 lg:left-auto lg:right-12 flex justify-center lg:justify-end gap-3 sm:gap-6 px-4 sm:px-0 z-40">
                <button onClick={() => onExplore(activeCarData._id)} className="flex-1 lg:flex-none px-4 sm:px-10 py-3 sm:py-5 bg-white text-blue-600 font-black rounded-xl sm:rounded-3xl shadow-2xl uppercase tracking-widest text-[8px] sm:text-xs">Explorer</button>
                <button onClick={() => onBook(activeCarData._id)} className="flex-1 lg:flex-none px-6 sm:px-12 py-3 sm:py-5 bg-blue-600 text-white font-black rounded-xl sm:rounded-3xl shadow-2xl uppercase tracking-widest text-[8px] sm:text-xs">Réserver</button>
             </div>

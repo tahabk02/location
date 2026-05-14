@@ -585,23 +585,28 @@ export const CarDetails: React.FC<CarDetailsProps> = ({
                 ))}
               </div>
 
-              {/* Specs Bento Grid for Mobile */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-4">
+              {/* Specs Bento Grid for Mobile - Refactored for Responsiveness */}
+              <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 gap-3 md:gap-4">
                 {quickSpecs.map((spec, index) => (
                   <div
                     key={index}
-                    className="p-4 rounded-2xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-xl group hover:border-blue-500/30 transition-all"
+                    className="p-4 rounded-2xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-xl group hover:border-blue-500/30 transition-all flex flex-row sm:flex-col items-center sm:items-start gap-4 sm:gap-0"
                   >
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="p-2 rounded-lg bg-blue-500/10 text-blue-600">
+                    <div className="flex items-center gap-3 mb-0 sm:mb-2">
+                      <div className="p-2.5 rounded-xl bg-blue-500/10 text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
                         {spec.icon}
                       </div>
-                      <span className="text-[8px] sm:text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                      <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest sm:hidden">
                         {spec.label}
                       </span>
                     </div>
-                    <div className="text-sm sm:text-base font-black dark:text-white truncate">
-                      {spec.value}
+                    <div className="flex flex-col">
+                      <span className="hidden sm:block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">
+                        {spec.label}
+                      </span>
+                      <div className="text-sm sm:text-lg font-black dark:text-white">
+                        {spec.value}
+                      </div>
                     </div>
                   </div>
                 ))}
