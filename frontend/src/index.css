@@ -5,10 +5,19 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    font-size: 15px; /* Slightly smaller base font for better scaling at 100% zoom */
+  }
+
+  @media (min-width: 1536px) {
+    html {
+      font-size: 16px; /* Back to 16px for very large screens */
+    }
   }
 
   body {
-    @apply transition-colors duration-300;
+    @apply transition-colors duration-300 antialiased overflow-x-hidden;
+    max-width: 2560px; /* Prevent extreme stretching on ultra-wide monitors */
+    margin: 0 auto;
   }
 }
 
