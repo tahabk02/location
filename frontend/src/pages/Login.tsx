@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { LogIn, Lock, Mail, ArrowRight, Car, UserPlus, User, ShieldCheck } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import { useLanguage } from "../contexts/LanguageContext";
-import { register as registerApi } from "../services/api";
+import { register as registerApi, authService } from "../services/api";
 
 export function LoginPage() {
   const navigate = useNavigate();
@@ -179,7 +179,18 @@ export function LoginPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-bold text-gray-500 uppercase tracking-widest ml-1">{t("auth.password")}</label>
+              <div className="flex justify-between items-center ml-1">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">{t("auth.password")}</label>
+                {isLogin && (
+                  <button 
+                    type="button"
+                    onClick={() => setShowForgotModal(true)}
+                    className="text-[10px] font-black text-blue-500 hover:text-blue-400 uppercase tracking-tighter transition-colors"
+                  >
+                    Oublié ?
+                  </button>
+                )}
+              </div>
               <div className="relative group">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 w-5 h-5 group-focus-within:text-blue-500 transition-colors" />
                 <input 
@@ -202,17 +213,6 @@ export function LoginPage() {
               <ArrowRight className="w-5 h-5" />
             </button>
           </form>
-
-          {isLogin && (
-            <div className="mt-6 text-center">
-              <button 
-                onClick={() => setShowForgotModal(true)}
-                className="text-xs font-bold text-gray-500 hover:text-blue-500 uppercase tracking-widest transition-colors"
-              >
-                Mot de passe oublié ?
-              </button>
-            </div>
-          )}
 
           <div className="mt-8 pt-8 border-t border-white/5 text-center">
             <div className="flex items-center justify-center gap-2 text-gray-500 text-xs font-bold uppercase tracking-widest">
