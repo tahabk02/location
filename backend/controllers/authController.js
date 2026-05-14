@@ -38,6 +38,7 @@ export const register = async (req, res) => {
       createdAt: new Date()
     });
     console.log("User registered successfully:", email);
+    res.json({ message: "User registered successfully:", email });
     res
       .status(201)
       .json({ id: result.insertedId.toString(), name, email, role, agencyId });
@@ -46,6 +47,65 @@ export const register = async (req, res) => {
     res
       .status(500)
       .json({ message: "Registration error", error: error.message });
+  }
+};
+
+export const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+  try {
+    const users = getCollection("users");
+    const user = await users.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "Utilisateur non trouvé avec cet email" });
+    }
+
+    // Générer un code de réinitialisation simple à 6 chiffres pour la démo
+    const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const resetExpires = new Date(Date.now() + 3600000); // 1 heure
+
+    await users.updateOne(
+      { _id: user._id },
+      { $set: { resetCode, resetExpires } }
+    );
+
+    // Dans une app réelle, on enverrait un email ici. Pour la démo, on simule.
+    console.log(`[SIMULATION EMAIL] Code de réinitialisation pour ${email} : ${resetCode}`);
+    
+    res.json({ 
+      message: "Un code de réinitialisation a été envoyé à votre email (Simulé dans la console)",
+      // On renvoie le code pour faciliter le test en démo si besoin, mais à retirer en prod
+      debugCode: resetCode 
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Erreur lors de l'oubli du mot de passe", error: error.message });
+  }
+};
+
+export const resetPassword = async (req, res) => {
+  const { email, code, newPassword } = req.body;
+  try {
+    const users = getCollection("users");
+    const user = await users.findOne({ 
+      email, 
+      resetCode: code,
+      resetExpires: { $gt: new Date() }
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: "Code invalide ou expiré" });
+    }
+
+    await users.updateOne(
+      { _id: user._id },
+      { 
+        $set: { password: newPassword }, 
+        $unset: { resetCode: "", resetExpires: "" } 
+      }
+    );
+
+    res.json({ message: "Mot de passe réinitialisé avec succès" });
+  } catch (error) {
+    res.status(500).json({ message: "Erreur lors de la réinitialisation", error: error.message });
   }
 };
 

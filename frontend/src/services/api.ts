@@ -150,6 +150,22 @@ export const authService = {
   login,
   register,
   getUsers,
+  forgotPassword: async (email: string) => {
+    const response = await fetch(`${API_URL}/auth/forgot-password`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+    return handleResponse(response);
+  },
+  resetPassword: async (data: any) => {
+    const response = await fetch(`${API_URL}/auth/reset-password`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    return handleResponse(response);
+  },
 };
 
 export const bookingService = {

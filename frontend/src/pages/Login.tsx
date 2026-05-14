@@ -19,6 +19,46 @@ export function LoginPage() {
   
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showForgotModal, setShowForgotModal] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [resetStep, setResetStep] = useState(1); // 1: Email, 2: Code & New Pass
+  const [resetCode, setResetCode] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [forgotStatus, setForgotStatus] = useState({ type: "", message: "" });
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setForgotStatus({ type: "", message: "" });
+    setIsSubmitting(true);
+    try {
+      const res = await authService.forgotPassword(forgotEmail);
+      setForgotStatus({ type: "success", message: res.message });
+      setResetStep(2);
+    } catch (err: any) {
+      setForgotStatus({ type: "error", message: err.message });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setForgotStatus({ type: "", message: "" });
+    setIsSubmitting(true);
+    try {
+      await authService.resetPassword({ email: forgotEmail, code: resetCode, newPassword });
+      setForgotStatus({ type: "success", message: "Mot de passe réinitialisé ! Connectez-vous." });
+      setTimeout(() => {
+        setShowForgotModal(false);
+        setResetStep(1);
+        setIsLogin(true);
+      }, 2000);
+    } catch (err: any) {
+      setForgotStatus({ type: "error", message: err.message });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -163,6 +203,17 @@ export function LoginPage() {
             </button>
           </form>
 
+          {isLogin && (
+            <div className="mt-6 text-center">
+              <button 
+                onClick={() => setShowForgotModal(true)}
+                className="text-xs font-bold text-gray-500 hover:text-blue-500 uppercase tracking-widest transition-colors"
+              >
+                Mot de passe oublié ?
+              </button>
+            </div>
+          )}
+
           <div className="mt-8 pt-8 border-t border-white/5 text-center">
             <div className="flex items-center justify-center gap-2 text-gray-500 text-xs font-bold uppercase tracking-widest">
               <ShieldCheck className="w-4 h-4 text-blue-500" />
@@ -171,6 +222,106 @@ export function LoginPage() {
           </div>
         </div>
       </motion.div>
+
+      {/* Forgot Password Modal */}
+      <AnimatePresence>
+        {showForgotModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowForgotModal(false)}
+              className="absolute inset-0 bg-gray-950/80 backdrop-blur-md"
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative w-full max-w-md bg-gray-900 border border-white/10 p-8 sm:p-10 rounded-[2.5rem] shadow-2xl"
+            >
+              <h3 className="text-2xl font-black text-white mb-2 uppercase tracking-tight">Récupération</h3>
+              <p className="text-gray-400 text-sm mb-8">
+                {resetStep === 1 
+                  ? "Entrez votre email pour recevoir un code de réinitialisation." 
+                  : "Entrez le code reçu et votre nouveau mot de passe."}
+              </p>
+
+              {forgotStatus.message && (
+                <div className={`p-4 rounded-xl mb-6 text-xs font-bold border ${forgotStatus.type === 'success' ? 'bg-green-500/10 border-green-500 text-green-400' : 'bg-red-500/10 border-red-500 text-red-400'}`}>
+                  {forgotStatus.message}
+                </div>
+              )}
+
+              {resetStep === 1 ? (
+                <form onSubmit={handleForgotPassword} className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] ml-1">Email</label>
+                    <div className="relative group">
+                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 w-5 h-5 group-focus-within:text-blue-500" />
+                      <input 
+                        type="email" 
+                        required
+                        value={forgotEmail}
+                        onChange={(e) => setForgotEmail(e.target.value)}
+                        className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                        placeholder="votre@email.com"
+                      />
+                    </div>
+                  </div>
+                  <button 
+                    disabled={isSubmitting}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-2xl transition-all shadow-lg shadow-blue-600/20 disabled:opacity-50"
+                  >
+                    Envoyer le code
+                  </button>
+                </form>
+              ) : (
+                <form onSubmit={handleResetPassword} className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] ml-1">Code de validation</label>
+                    <input 
+                      type="text" 
+                      required
+                      value={resetCode}
+                      onChange={(e) => setResetCode(e.target.value)}
+                      className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-center tracking-[0.5em] font-black text-xl"
+                      placeholder="000000"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] ml-1">Nouveau mot de passe</label>
+                    <div className="relative group">
+                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 w-5 h-5 group-focus-within:text-blue-500" />
+                      <input 
+                        type="password" 
+                        required
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                        placeholder="••••••••"
+                      />
+                    </div>
+                  </div>
+                  <button 
+                    disabled={isSubmitting}
+                    className="w-full bg-green-600 hover:bg-green-700 text-white font-black py-4 rounded-2xl transition-all shadow-lg shadow-green-600/20 disabled:opacity-50"
+                  >
+                    Mettre à jour
+                  </button>
+                </form>
+              )}
+              
+              <button 
+                onClick={() => { setShowForgotModal(false); setResetStep(1); }}
+                className="w-full mt-4 text-xs font-bold text-gray-500 hover:text-white uppercase tracking-widest transition-colors"
+              >
+                Annuler
+              </button>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
