@@ -314,7 +314,7 @@ export const Hero: React.FC<HeroProps> = ({ onBook, onExplore, isMobile }) => {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12 lg:py-32 relative z-20">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-12 lg:py-32 relative z-20">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-20 items-center">
           <div className="space-y-4 sm:space-y-10 order-2 lg:order-1">
             <div className="flex flex-row items-center justify-between gap-4 mb-2 sm:mb-8">
@@ -398,7 +398,7 @@ export const Hero: React.FC<HeroProps> = ({ onBook, onExplore, isMobile }) => {
               ))}
             </div>
             <div className={`relative rounded-3xl sm:rounded-[4rem] overflow-hidden border sm:border-4 transition-all ${theme === 'light' ? 'bg-white border-blue-50 shadow-3xl' : 'bg-black border-blue-600/20'}`}>
-               <img src={activeCarData.image || activeCarData.images?.[0]} className="w-full h-[220px] sm:h-[500px] object-cover" alt={activeCarData.name} />
+               <img src={activeCarData.image || activeCarData.images?.[0]} className="w-full h-[180px] sm:h-[500px] object-cover" alt={activeCarData.name} />
                <div className="absolute bottom-4 left-4 sm:bottom-10 sm:left-10">
                   <h3 className="text-xl sm:text-5xl font-black text-white uppercase tracking-tighter drop-shadow-2xl">{activeCarData.brand} {activeCarData.model}</h3>
                   <p className="text-blue-400 font-black text-sm sm:text-2xl uppercase">{activeCarData.pricePerDay} DH / JOUR</p>
