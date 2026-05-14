@@ -389,16 +389,18 @@ export const Hero: React.FC<HeroProps> = ({ onBook, onExplore, isMobile }) => {
             </div>
           </div>
 
-          <div className="relative order-1 lg:order-2 mt-4 lg:mt-0">
-            <div className="absolute -top-8 sm:-top-20 left-1/2 -translate-x-1/2 flex gap-2 sm:gap-4 z-30 w-full justify-center">
+          <div className="relative order-1 lg:order-2 mt-12 lg:mt-0 flex flex-col items-center">
+            {/* Thumbnails Container - Moved to Relative to avoid overlap */}
+            <div className="relative flex gap-2 sm:gap-4 z-30 mb-4 sm:mb-8 justify-center overflow-hidden p-2">
               {currentCars.map((car, i) => (
-                <button key={car._id || i} onClick={() => setActiveCar(i)} className={`w-10 h-10 sm:w-20 sm:h-20 rounded-lg sm:rounded-2xl overflow-hidden border sm:border-4 transition-all ${activeCar === i ? 'border-blue-600 scale-110 shadow-2xl' : 'border-white/10 opacity-50'}`}>
+                <button key={car._id || i} onClick={() => setActiveCar(i)} className={`w-12 h-12 sm:w-20 sm:h-20 rounded-lg sm:rounded-2xl overflow-hidden border sm:border-4 transition-all ${activeCar === i ? 'border-blue-600 scale-110 shadow-2xl' : 'border-white/10 opacity-50'}`}>
                   <img src={car.image || car.images?.[0]} className="w-full h-full object-cover" alt={car.name} />
                 </button>
               ))}
             </div>
-            <div className={`relative rounded-3xl sm:rounded-[4rem] overflow-hidden border sm:border-4 transition-all ${theme === 'light' ? 'bg-white border-blue-50 shadow-3xl' : 'bg-black border-blue-600/20'}`}>
-               <img src={activeCarData.image || activeCarData.images?.[0]} className="w-full h-[180px] sm:h-[500px] object-cover" alt={activeCarData.name} />
+            
+            <div className={`relative w-full rounded-3xl sm:rounded-[4rem] overflow-hidden border sm:border-4 transition-all ${theme === 'light' ? 'bg-white border-blue-50 shadow-3xl' : 'bg-black border-blue-600/20'}`}>
+               <img src={activeCarData.image || activeCarData.images?.[0]} className="w-full h-[200px] sm:h-[500px] object-cover" alt={activeCarData.name} />
                <div className="absolute bottom-4 left-4 sm:bottom-10 sm:left-10">
                   <h3 className="text-xl sm:text-5xl font-black text-white uppercase tracking-tighter drop-shadow-2xl">{activeCarData.brand} {activeCarData.model}</h3>
                   <p className="text-blue-400 font-black text-sm sm:text-2xl uppercase">{activeCarData.pricePerDay} DH / JOUR</p>
