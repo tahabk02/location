@@ -314,7 +314,7 @@ export const Hero: React.FC<HeroProps> = ({ onBook, onExplore, isMobile }) => {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-56 pb-20 lg:py-32 relative z-20">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20 lg:py-32 relative z-20">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-20 items-center">
           <div className="space-y-4 sm:space-y-10 order-2 lg:order-1">
             <div className="flex flex-row items-center justify-between gap-4 mb-2 sm:mb-8">
@@ -389,11 +389,11 @@ export const Hero: React.FC<HeroProps> = ({ onBook, onExplore, isMobile }) => {
             </div>
           </div>
 
-          <div className="relative order-1 lg:order-2 mt-8 lg:mt-0 flex flex-col items-center w-full">
+          <div className="relative order-1 lg:order-2 mt-4 lg:mt-0 flex flex-col items-center w-full">
             {/* Thumbnails Container */}
-            <div className="relative flex gap-2 sm:gap-4 z-30 mb-6 sm:mb-10 justify-center overflow-hidden p-1 w-full">
+            <div className="relative flex gap-2 sm:gap-4 z-30 mb-4 sm:mb-10 justify-center overflow-hidden p-1 w-full">
               {currentCars.map((car, i) => (
-                <button key={car._id || i} onClick={() => setActiveCar(i)} className={`w-12 h-12 sm:w-24 sm:h-24 rounded-xl sm:rounded-[2rem] overflow-hidden border-2 sm:border-4 transition-all duration-500 ${activeCar === i ? 'border-blue-600 scale-110 shadow-2xl shadow-blue-500/40' : 'border-white/10 opacity-40 hover:opacity-100'}`}>
+                <button key={car._id || i} onClick={() => setActiveCar(i)} className={`w-10 h-10 sm:w-24 sm:h-24 rounded-xl sm:rounded-[2rem] overflow-hidden border-2 sm:border-4 transition-all duration-500 ${activeCar === i ? 'border-blue-600 scale-110 shadow-2xl shadow-blue-500/40' : 'border-white/10 opacity-40 hover:opacity-100'}`}>
                   <img src={car.image || car.images?.[0]} className="w-full h-full object-cover" alt={car.name} />
                 </button>
               ))}
@@ -401,7 +401,7 @@ export const Hero: React.FC<HeroProps> = ({ onBook, onExplore, isMobile }) => {
             
             {/* Main Image Card - Mobile Optimized Height */}
             <div className={`relative w-full rounded-[2rem] sm:rounded-[4rem] overflow-hidden border sm:border-8 transition-all duration-700 ${theme === 'light' ? 'bg-white border-white shadow-3xl' : 'bg-gray-900/50 border-gray-800/50 shadow-2xl shadow-blue-900/20'}`}>
-               <img src={activeCarData.image || activeCarData.images?.[0]} className="w-full h-[220px] sm:h-[550px] object-cover" alt={activeCarData.name} />
+               <img src={activeCarData.image || activeCarData.images?.[0]} className="w-full h-[170px] sm:h-[550px] object-cover" alt={activeCarData.name} />
                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent sm:from-black/60" />
                <div className="absolute bottom-4 left-6 sm:bottom-12 sm:left-12">
                   <h3 className="text-2xl sm:text-6xl font-black text-white uppercase tracking-tighter drop-shadow-2xl mb-1 sm:mb-2">{activeCarData.brand} <span className="text-blue-500">{activeCarData.model}</span></h3>
