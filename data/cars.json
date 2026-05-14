@@ -1,41 +1,61 @@
 [
   {
+    "agencyId": "default",
     "brand": "Tesla",
     "model": "Model 3",
+    "category": "Electrique",
     "pricePerDay": 120,
     "seats": 5,
+    "fuel": "Électrique",
+    "speed": "225 km/h",
     "image": "https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&w=1200&q=80",
     "available": true
   },
   {
+    "agencyId": "default",
     "brand": "BMW",
     "model": "X5",
+    "category": "SUV",
     "pricePerDay": 180,
     "seats": 5,
+    "fuel": "Diesel",
+    "speed": "235 km/h",
     "image": "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1200&q=80",
     "available": true
   },
   {
+    "agencyId": "default",
     "brand": "Audi",
     "model": "A6",
+    "category": "Luxe",
     "pricePerDay": 150,
     "seats": 5,
+    "fuel": "Essence",
+    "speed": "250 km/h",
     "image": "https://images.unsplash.com/photo-1549921296-3c08606f4f25?auto=format&fit=crop&w=1200&q=80",
     "available": true
   },
   {
+    "agencyId": "default",
     "brand": "Mercedes",
     "model": "GLE",
+    "category": "SUV",
     "pricePerDay": 190,
     "seats": 5,
+    "fuel": "Diesel",
+    "speed": "225 km/h",
     "image": "https://images.unsplash.com/photo-1525609004556-c46c7d6cf023?auto=format&fit=crop&w=1200&q=80",
     "available": true
   },
   {
+    "agencyId": "default",
     "brand": "Volkswagen",
     "model": "Passat",
+    "category": "Luxe",
     "pricePerDay": 90,
     "seats": 5,
+    "fuel": "Diesel",
+    "speed": "210 km/h",
     "image": "https://images.unsplash.com/photo-1517448202560-8f6bf0d0ece4?auto=format&fit=crop&w=1200&q=80",
     "available": true
   }

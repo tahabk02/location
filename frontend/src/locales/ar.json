@@ -6,32 +6,359 @@
     "gallery": "المعرض",
     "client_space": "فضاء الزبون",
     "admin_space": "فضاء المدير",
-    "logout": "تسجيل الخروج"
+    "logout": "تسجيل الخروج",
+    "language": "اللغة"
+  },
+  "common": {
+    "loading": "جاري التحميل...",
+    "error": "حدث خطأ ما",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "add": "إضافة",
+    "confirm": "تأكيد",
+    "search": "بحث",
+    "actions": "إجراءات",
+    "date": "التاريخ",
+    "amount": "المبلغ",
+    "status": "الحالة",
+    "category": "الفئة",
+    "description": "الوصف",
+    "currency": "درهم",
+    "day": "يوم",
+    "all": "الكل",
+    "status_pending": "في الانتظار",
+    "status_confirmed": "مؤكد",
+    "status_cancelled": "ملغي",
+    "status_completed": "مكتمل",
+    "client": "زبون",
+    "to": "إلى",
+    "no_results": "لا توجد بيانات متاحة"
+  },
+  "inventory": {
+    "maintenance": "الصيانة",
+    "consumables": "المواد الاستهلاكية",
+    "parts": "قطع الغيار",
+    "cleaning": "التنظيف"
+  },
+  "crm": {
+    "no_history": "لا توجد حجوزات لهذا الزبون."
+  },
+  "whatsapp": {
+    "message": "مرحباً {name}، تم تأكيد حجزكم لسيارة {car} من {start} إلى {end}. المجموع: {total} {currency}. شكراً لثقتكم!"
   },
   "hero": {
     "title": "استأجر التميز، قد الفخامة",
     "subtitle": "اكتشف أسطولنا الحصري من السيارات الفاخرة لتنقلاتكم في المغرب.",
-    "cta": "احجز الآن"
+    "cta": "احجز الآن",
+    "stats": {
+      "speed": "السرعة",
+      "energy": "الطاقة",
+      "temp": "الحرارة"
+    },
+    "controls": {
+      "title": "تحكم ذكي",
+      "connected": "متصل",
+      "navigation": "الملاحة",
+      "connectivity": "الاتصال",
+      "gps": "نظام GPS ممتاز",
+      "climate": "تكييف الهواء",
+      "purifier": "منقي الهواء",
+      "weather": "الطقس"
+    },
+    "specs": {
+      "title": "المواصفات التقنية",
+      "ai": "ذكاء اصطناعي مدمج",
+      "connectivity": "سرعة الاتصال"
+    },
+    "price_tag": {
+      "all_inclusive": "يوم • شامل كليا",
+      "unlimited": "غير محدود",
+      "insurance": "تأمين",
+      "premium": "ممتاز"
+    },
+    "footer": {
+      "active": "النظام نشط",
+      "connected": "متصل بالشبكة",
+      "explore": "استكشاف الكتالوج",
+      "book": "احجز الآن"
+    }
   },
   "gallery": {
     "title": "معرض الصور والفيديو",
-    "subtitle": "اكتشف المزيد من صور سياراتنا الفاخرة وفيديو تعريفي مذهل."
+    "subtitle": "اكتشف المزيد من صور سياراتنا الفاخرة وفيديو تعريفي مذهل.",
+    "video_title": "فيديو تعريفي",
+    "collection_title": "مجموعتنا",
+    "collection_desc": "هذه الصور تعرض السيارات الفاخرة المتاحة للإيجار.",
+    "stats_images": "صور المعرض",
+    "stats_video": "فيديو تفاعلي",
+    "empty": "المعرض فارغ",
+    "add_btn": "إضافة إلى المعرض",
+    "url_placeholder": "https://..."
   },
   "features": {
     "title": "خدمات متميزة",
-    "subtitle": "تجربة تأجير مصممة خصيصًا لتلبية احتياجاتكم الأكثر تطلبًا."
+    "subtitle": "تجربة تأجير مصممة خصيصًا لتلبية احتياجاتكم الأكثر تطلبًا.",
+    "badge": "تميز معتمد",
+    "stats": {
+      "clients": "زبائن راضون",
+      "satisfaction": "نسبة الرضا",
+      "support": "دعم متميز"
+    },
+    "cta": {
+      "title": "ارتقِ بتجربتك إلى المستوى التالي",
+      "subtitle": "انضم إلى نخبة السائقين واستفد من خدمة دون تنازلات",
+      "start": "ابدأ التجربة",
+      "discover": "اكتشف المزايا",
+      "trust": "ضمان الرضا لمدة 30 يومًا • دفع آمن 100% • دعم ذو أولوية"
+    }
   },
   "cars": {
     "title": "أسطولنا الحصري",
     "subtitle": "الأداء والراحة والهيبة في كل رحلة.",
     "view_details": "عرض التفاصيل",
-    "book_now": "احجز الآن"
+    "book_now": "احجز الآن",
+    "available": "متاح",
+    "rented": "محجوز",
+    "price_day": "السعر / اليوم",
+    "fuel": "الوقود",
+    "seats": "المقاعد",
+    "speed": "السرعة",
+    "brand": "العلامة",
+    "model": "الطراز",
+    "sync": "جاري مزامنة الأسطول...",
+    "empty": "لا توجد سيارات متاحة",
+    "empty_desc": "عد لاحقًا لاكتشاف مجموعتنا الجديدة."
+  },
+  "auth": {
+    "login_title": "مرحباً بعودتك",
+    "register_title": "انضم إلى النخبة",
+    "login_subtitle": "ادخل إلى مرآبك الخاص في AVENIR KAMIL CAR",
+    "register_subtitle": "أنشئ حسابك الخاص بالزبائن المميزين",
+    "login_tab": "تسجيل الدخول",
+    "register_tab": "إنشاء حساب",
+    "full_name": "الاسم الكامل",
+    "email": "البريد الإلكتروني المهني",
+    "password": "كلمة المرور",
+    "login_btn": "دخول",
+    "register_btn": "إنشاء حسابي",
+    "processing": "جاري المعالجة...",
+    "secure_login": "اتصال آمن SSL 256-bit",
+    "account_created": "تم إنشاء الحساب! سجل دخولك الآن.",
+    "invalid_creds": "بيانات الاعتماد غير صالحة.",
+    "register_error": "خطأ أثناء التسجيل."
+  },
+  "admin": {
+    "suite": "جناح الأعمال",
+    "management": "الإدارة والأداء",
+    "dashboard": {
+      "live_performance": "الأداء المباشر",
+      "no_data": "لا توجد بيانات متاحة",
+      "reservations_registry": "سجل الحجوزات",
+      "ref_vehicle": "المرجع / السيارة",
+      "period": "الفترة",
+      "no_reservations": "لا توجد حجوزات مسجلة",
+      "total_revenue": "إجمالي الإيرادات",
+      "excellent": "ممتاز",
+      "no_expenses": "لا توجد مصاريف مسجلة",
+      "fleet_management": "إدارة الأسطول",
+      "services_management": "إدارة الخدمات",
+      "add_service": "إضافة خدمة",
+      "no_services": "لا توجد خدمات مخصصة",
+      "fleet_control": "برج مراقبة الأسطول",
+      "oil_change_label": "تغيير الزيت:",
+      "insurance_label": "التأمين:",
+      "available": "متاح",
+      "workshop": "ورشة",
+      "contract_validation": "تأكيد العقد",
+      "clear": "مسح",
+      "validate_generate": "تأكيد وتوليد",
+      "vehicle_photos": "صور السيارة",
+      "notes_observations": "ملاحظات ومعاينات",
+      "alert_live_system": "نظام التنبيه المباشر"
+    },
+    "accounting": {
+      "suite_title": "جناح المحاسبة المهني",
+      "suite_subtitle": "تحليل الأداء والضرائب | Avenir Kamil Car",
+      "all": "الكل",
+      "month": "شهر",
+      "year": "سنة",
+      "pdf_report": "تقرير PDF",
+      "revenue": "الإيرادات",
+      "total_expenses": "إجمالي المصاريف",
+      "profit_margin": "هامش الربح",
+      "optimal_performance": "أداء مثالي",
+      "est_taxation": "الضرائب المقدرة",
+      "tva_tax_prof": "الضريبة على القيمة المضافة + الضريبة المهنية",
+      "cash_flow": "التدفق النقدي",
+      "monthly_analysis": "تحليل الإيرادات والمصاريف الشهري",
+      "detailed_reports": "عرض التقارير المفصلة",
+      "toggle_period": "تغيير الفترة",
+      "reset_filters": "إعادة تعيين المرشحات",
+      "revenues": "الإيرادات",
+      "expenses": "المصاريف",
+      "tax_calculator": "حاسبة الضرائب",
+      "taxation_details": "تفاصيل الضرائب (تقديرية)",
+      "real_net_profit": "صافي الربح الحقيقي",
+      "pl_forecast": "توقعات الأرباح والخسائر",
+      "next_month_projection": "توقعات الشهر القادم",
+      "trend_based": "بناءً على الاتجاهات الحالية (+5%)",
+      "config_tax_alerts": "إعداد تنبيهات الضرائب",
+      "ledger_title": "دفتر الأستاذ العام",
+      "ledger_subtitle": "تفاصيل جميع المعاملات المالية",
+      "all_categories": "جميع الفئات",
+      "personnel": "الموظفين",
+      "rent": "الكراء",
+      "add_entry": "إضافة قيد",
+      "date_ref": "التاريخ والمرجع",
+      "type": "النوع",
+      "amount": "المبلغ",
+      "status": "الحالة",
+      "credit": "له (دائن)",
+      "debit": "عليه (مدين)",
+      "recorded": "مسجل",
+      "load_more": "تحميل المزيد من القيود",
+      "end_history": "نهاية السجل",
+      "tax_settings": "إعدادات الضرائب",
+      "tax_settings_help": "هذه معدلات تؤثر فقط على حسابات المعاينة في جناح المحاسبة.",
+      "tva_rate": "معدل الضريبة على القيمة المضافة",
+      "est_professional_tax": "الضريبة المهنية المقدرة",
+      "save_settings": "حفظ الإعدادات"
+    },
+    "tabs": {
+      "dashboard": "لوحة التحكم",
+      "fleet": "الأسطول",
+      "sales": "المبيعات",
+      "analytics": "التحليلات",
+      "expenses": "المصاريف",
+      "gallery": "المعرض",
+      "settings": "الإعدادات",
+      "planning": "التخطيط",
+      "inventory": "المخزون",
+      "crm": "إدارة الزبناء"
+    },
+    "planning": {
+      "title": "تخطيط الأسطول",
+      "subtitle": "رؤية شاملة للحجوزات",
+      "vehicles": "السيارات"
+    },
+    "inventory": {
+      "title": "إدارة المخزون والسلع",
+      "subtitle": "الصيانة والمواد الاستهلاكية",
+      "add_btn": "إضافة عنصر",
+      "designation": "التعيين",
+      "stock": "المخزون",
+      "unit_price": "سعر الوحدة",
+      "empty": "المخزون فارغ",
+      "items": "عناصر"
+    },
+    "crm": {
+      "title": "إدارة علاقات الزبناء (CRM)",
+      "search_placeholder": "بحث عن زبون...",
+      "loyalty_points": "نقاط الولاء",
+      "history": "السجل",
+      "blacklist": "في القائمة السوداء",
+      "elite": "نخبة",
+      "premium": "ممتاز",
+      "gold": "ذهبي",
+      "ban": "إضافة للقائمة السوداء",
+      "unban": "إزالة من القائمة السوداء",
+      "reservations": "حجوزات"
+    },
+    "inspection": {
+      "title": "معاينة السيارة",
+      "check_in": "استلام السيارة",
+      "check_out": "تسليم السيارة",
+      "photos": "صور السيارة",
+      "notes": "ملاحظات ومعاينات",
+      "validate": "تأكيد المعاينة",
+      "placeholder": "سجل الخدوش، مستوى الوقود، إلخ..."
+    },
+    "charts": {
+      "flux": "التدفق المالي الشهري",
+      "performance": "أداء الأسطول",
+      "volume": "حجم الحجوزات",
+      "repartition": "توزيع الأسطول",
+      "health": "مؤشر صحة الأعمال",
+      "profitability_cat": "الربحية حسب الفئة",
+      "cash_flow": "التدفق النقدي",
+      "rev_vs_exp": "الإيرادات مقابل المصاريف"
+    },
+    "fleet": {
+      "add_car": "إضافة سيارة",
+      "edit_car": "تعديل السيارة",
+      "car_brand": "علامة السيارة",
+      "car_model": "الطراز",
+      "price_day": "السعر / اليوم",
+      "fuel": "الطاقة",
+      "media": "الوسائط (صور)",
+      "video_link": "رابط الفيديو (YouTube/MP4)",
+      "insurance": "انتهاء التأمين",
+      "tech_visit": "الفحص التقني",
+      "vignette": "انتهاء الضريبة",
+      "last_oil": "آخر تغيير زيت (كم)",
+      "next_oil": "تغيير الزيت القادم (كم)"
+    },
+    "expenses": {
+      "title": "إدارة المصاريف",
+      "add_btn": "تسجيل مصاريف",
+      "total": "إجمالي المصاريف",
+      "count": "عدد العمليات",
+      "average": "متوسط المصاريف",
+      "designation": "وصف المصاريف",
+      "category": "الفئة",
+      "amount": "المبلغ",
+      "vehicle": "السيارة (اختياري)"
+    },
+    "settings": {
+      "profile": "ملف الوكالة",
+      "logo": "شعار الوكالة",
+      "change_logo": "تغيير الشعار",
+      "commercial_name": "الاسم التجاري",
+      "contact_email": "بريد التواصل",
+      "currency": "العملة",
+      "tax": "الضريبة (%)",
+      "update_btn": "تحديث الإعدادات"
+    },
+    "exports": {
+      "pdf": "تصدير PDF",
+      "excel": "تصدير Excel"
+    }
   },
   "footer": {
-    "about": "الرائد في تأجير السيارات الفاخرة في المغرب.",
+    "about": "الرائد في تأجير السيارات الفاخرة في المغرب. نحن نعيد تعريف تجربة التنقل من خلال أسطولنا الحصري وخدمتنا المصممة حسب الطلب.",
+    "excellence": "التميز في عالم السيارات",
     "address": "العنوان",
     "phone": "الهاتف",
     "email": "البريد الإلكتروني",
-    "rights": "جميع الحقوق محفوظة."
+    "rights": "جميع الحقوق محفوظة.",
+    "made_with": "صنع بشغف في المغرب",
+    "follow_us": "تابعونا على :",
+    "payments": "وسائل الدفع المقبولة :",
+    "newsletter": {
+      "title": "النشرة الإخبارية الحصرية",
+      "desc": "كن أول من يتلقى عروضنا الخاصة وأخبارنا.",
+      "placeholder": "بريدك الإلكتروني",
+      "btn": "اشترك",
+      "success": "شكراً لاهتمامكم!",
+      "policy": "من خلال الاشتراك، فإنك توافق على سياسة الخصوصية الخاصة بنا."
+    },
+    "quick_links": {
+      "title": "روابط سريعة",
+      "fleet": "الأسطول الفاخر",
+      "services": "خدمات VIP",
+      "reservation": "حجز سريع",
+      "offers": "عروض خاصة"
+    },
+    "services": {
+      "title": "خدماتنا",
+      "long_term": "إيجار طويل الأمد",
+      "delivery": "توصيل للمنزل",
+      "chauffeur": "خدمة مع سائق",
+      "event": "باقة المناسبات",
+      "shooting": "إيجار للتصوير",
+      "loyalty": "برنامج الولاء"
+    }
   }
 }

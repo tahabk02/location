@@ -11,122 +11,11 @@ import {
   TrendingUp,
   Cpu,
   ShieldCheck,
+  X,
 } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useLanguage } from "../contexts/LanguageContext";
-
-const features = [
-  {
-    icon: Clock,
-    title: "Réservation Immédiate",
-    description:
-      "Système de réservation intelligent avec confirmation instantanée et gestion temps réel",
-    color: "blue",
-    stats: "98%",
-    statLabel: "Réservations validées en < 2min",
-    highlights: [
-      "Disponibilité temps réel",
-      "Paiement sécurisé",
-      "Confirmation SMS",
-    ],
-  },
-  {
-    icon: Shield,
-    title: "Protection Ultime",
-    description:
-      "Assurance tout risque avec couverture étendue et assistance juridique incluse",
-    color: "emerald",
-    stats: "0 DH",
-    statLabel: "Franchise sur nos véhicules premium",
-    highlights: [
-      "Assurance tous risques",
-      "Protection juridique",
-      "Assistance 24/7",
-    ],
-  },
-  {
-    icon: Headphones,
-    title: "Conciergerie VIP",
-    description:
-      "Service client dédié avec conseiller personnel et assistance multilingue",
-    color: "violet",
-    stats: "24/7",
-    statLabel: "Support premium prioritaire",
-    highlights: ["Conseiller dédié", "Multilingue", "Réponse < 5min"],
-  },
-  {
-    icon: Award,
-    title: "Excellence Certifiée",
-    description:
-      "Véhicules inspectés selon 150 points de contrôle et certification LuxeDrive Premium",
-    color: "amber",
-    stats: "150+",
-    statLabel: "Points de contrôle qualité",
-    highlights: [
-      "Certification premium",
-      "Contrôle technique",
-      "Historique complet",
-    ],
-  },
-  {
-    icon: Zap,
-    title: "Logistique Avancée",
-    description:
-      "Livraison express avec suivi GPS et service de conciergerie véhicule",
-    color: "pink",
-    stats: "30min",
-    statLabel: "Livraison moyenne en ville",
-    highlights: ["Tracking GPS", "Préparation VIP", "Retour flexible"],
-  },
-  {
-    icon: Globe,
-    title: "Réseau Élite",
-    description:
-      "Présence internationale avec agences partenaires et service sans frontières",
-    color: "cyan",
-    stats: "50+",
-    statLabel: "Villes partenaires premium",
-    highlights: ["International", "Agences partenaires", "Service unifié"],
-  },
-  {
-    icon: Cpu,
-    title: "Technologie IA",
-    description:
-      "Système de recommandation intelligent et gestion prédictive de la flotte",
-    color: "indigo",
-    stats: "AI",
-    statLabel: "Recommandation personnalisée",
-    highlights: [
-      "Algorithme IA",
-      "Prédiction maintenance",
-      "Optimisation flotte",
-    ],
-  },
-  {
-    icon: ShieldCheck,
-    title: "Sécurité Maximale",
-    description:
-      "Système de sécurité avancé avec géolocalisation et protection anti-intrusion",
-    color: "rose",
-    stats: "100%",
-    statLabel: "Véhicules équipés sécurité",
-    highlights: ["Géolocalisation", "Protection anti-vol", "Sécurité active"],
-  },
-  {
-    icon: TrendingUp,
-    title: "Performance Data",
-    description:
-      "Analyse de conduite et optimisation des performances grâce aux datas",
-    color: "lime",
-    stats: "∞",
-    statLabel: "Données analysées en temps réel",
-    highlights: [
-      "Analytics temps réel",
-      "Rapports personnalisés",
-      "Optimisation",
-    ],
-  },
-];
+import { serviceService } from "../services/api";
 
 const colorClasses: Record<
   string,
@@ -215,6 +104,9 @@ const colorClasses: Record<
 
 export const Features = () => {
   const { t, isRTL } = useLanguage();
+  const [dbServices, setDbServices] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [activeFilter, setActiveFilter] = useState<string>("all");
@@ -223,31 +115,149 @@ export const Features = () => {
     Array<{ x: number; y: number; size: number; speed: number }>
   >([]);
 
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const data = await serviceService.getAll();
+        setDbServices(data || []);
+      } catch (e) {
+        console.error("Error fetching services", e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchServices();
+  }, []);
+
+  const defaultFeatures = useMemo(() => [
+    {
+      icon: Clock,
+      title: isRTL ? "حجز فوري" : (t("nav.home") === "Home" ? "Immediate Booking" : "Réservation Immédiate"),
+      description: isRTL ? "نظام حجز ذكي مع تأكيد فوري وإدارة في الوقت الفعلي" : (t("nav.home") === "Home" ? "Smart booking system with instant confirmation and real-time management" : "Système de réservation intelligent avec confirmation instantanée et gestion temps réel"),
+      color: "blue" as const,
+      stats: "98%",
+      statLabel: isRTL ? "حجوزات تم تأكيدها في أقل من دقيقتين" : (t("nav.home") === "Home" ? "Bookings validated in < 2min" : "Réservations validées en < 2min"),
+      highlights: [
+        isRTL ? "توفر في الوقت الفعلي" : (t("nav.home") === "Home" ? "Real-time availability" : "Disponibilité temps réel"),
+        isRTL ? "دفع آمن" : (t("nav.home") === "Home" ? "Secure payment" : "Paiement sécurisé"),
+        isRTL ? "تأكيد عبر رسالة نصية" : (t("nav.home") === "Home" ? "SMS Confirmation" : "Confirmation SMS"),
+      ],
+      category: "logistics"
+    },
+    {
+      icon: Shield,
+      title: isRTL ? "حماية قصوى" : (t("nav.home") === "Home" ? "Ultimate Protection" : "Protection Ultime"),
+      description: isRTL ? "تأمين شامل مع تغطية موسعة ومساعدة قانونية متضمنة" : (t("nav.home") === "Home" ? "All-risk insurance with extended coverage and legal assistance included" : "Assurance tout risque avec couverture étendue et assistance juridique incluse"),
+      color: "emerald" as const,
+      stats: "0 DH",
+      statLabel: isRTL ? "إعفاء على سياراتنا الممتازة" : (t("nav.home") === "Home" ? "Deductible on our premium vehicles" : "Franchise sur nos véhicules premium"),
+      highlights: [
+        isRTL ? "تأمين شامل" : (t("nav.home") === "Home" ? "All-risk insurance" : "Assurance tous risques"),
+        isRTL ? "حماية قانونية" : (t("nav.home") === "Home" ? "Legal protection" : "Protection juridique"),
+        isRTL ? "مساعدة 24/7" : (t("nav.home") === "Home" ? "24/7 Assistance" : "Assistance 24/7"),
+      ],
+      category: "security"
+    },
+    {
+      icon: Headphones,
+      title: isRTL ? "كونسيرج VIP" : (t("nav.home") === "Home" ? "VIP Concierge" : "Conciergerie VIP"),
+      description: isRTL ? "خدمة عملاء مخصصة مع مستشار شخصي ومساعدة متعددة اللغات" : (t("nav.home") === "Home" ? "Dedicated customer service with a personal advisor and multilingual assistance" : "Service client dédié avec conseiller personnel et assistance multilingue"),
+      color: "violet" as const,
+      stats: "24/7",
+      statLabel: isRTL ? "دعم ممتاز ذو أولوية" : (t("nav.home") === "Home" ? "Priority premium support" : "Support premium prioritaire"),
+      highlights: [
+        isRTL ? "مستشار مخصص" : (t("nav.home") === "Home" ? "Dedicated advisor" : "Conseiller dédié"),
+        isRTL ? "متعدد اللغات" : (t("nav.home") === "Home" ? "Multilingual" : "Multilingue"),
+        isRTL ? "رد في أقل من 5 دقائق" : (t("nav.home") === "Home" ? "Reply < 5min" : "Réponse < 5min"),
+      ],
+      category: "service"
+    },
+    {
+      icon: Award,
+      title: isRTL ? "تميز معتمد" : (t("nav.home") === "Home" ? "Certified Excellence" : "Excellence Certifiée"),
+      description: isRTL ? "سيارات مفحوصة وفق 150 نقطة مراقبة وشهادة AVENIR KAMIL CAR Premium" : (t("nav.home") === "Home" ? "Vehicles inspected according to 150 control points and AVENIR KAMIL CAR Premium certification" : "Véhicules inspectés selon 150 points de contrôle et certification AVENIR KAMIL CAR Premium"),
+      color: "amber" as const,
+      stats: "150+",
+      statLabel: isRTL ? "نقاط مراقبة الجودة" : (t("nav.home") === "Home" ? "Quality control points" : "Points de contrôle qualité"),
+      highlights: [
+        isRTL ? "شهادة ممتازة" : (t("nav.home") === "Home" ? "Premium certification" : "Certification premium"),
+        isRTL ? "فحص تقني" : (t("nav.home") === "Home" ? "Technical visit" : "Contrôle technique"),
+        isRTL ? "تاريخ كامل" : (t("nav.home") === "Home" ? "Full history" : "Historique complet"),
+      ],
+      category: "service"
+    },
+    {
+      icon: Zap,
+      title: isRTL ? "لوجستيات متقدمة" : (t("nav.home") === "Home" ? "Advanced Logistics" : "Logistique Avancée"),
+      description: isRTL ? "توصيل سريع مع تتبع GPS وخدمة كونسيرج للسيارة" : (t("nav.home") === "Home" ? "Express delivery with GPS tracking and vehicle concierge service" : "Livraison express avec suivi GPS et service de conciergerie véhicule"),
+      color: "pink" as const,
+      stats: "30min",
+      statLabel: isRTL ? "متوسط التوصيل في المدينة" : (t("nav.home") === "Home" ? "Average city delivery" : "Livraison moyenne en ville"),
+      highlights: [
+        isRTL ? "تتبع GPS" : (t("nav.home") === "Home" ? "GPS Tracking" : "Tracking GPS"),
+        isRTL ? "تحضير VIP" : (t("nav.home") === "Home" ? "VIP Preparation" : "Préparation VIP"),
+        isRTL ? "عودة مرنة" : (t("nav.home") === "Home" ? "Flexible return" : "Retour flexible"),
+      ],
+      category: "logistics"
+    },
+    {
+      icon: Globe,
+      title: isRTL ? "شبكة النخبة" : (t("nav.home") === "Home" ? "Elite Network" : "Réseau Élite"),
+      description: isRTL ? "تواجد دولي مع وكالات شريكة وخدمة بدون حدود" : (t("nav.home") === "Home" ? "International presence with partner agencies and borderless service" : "Présence internationale avec agences partenaires et service sans frontières"),
+      color: "cyan" as const,
+      stats: "50+",
+      statLabel: isRTL ? "مدن شريكة ممتازة" : (t("nav.home") === "Home" ? "Premium partner cities" : "Villes partenaires premium"),
+      highlights: [
+        isRTL ? "دولي" : (t("nav.home") === "Home" ? "International" : "International"),
+        isRTL ? "وكالات شريكة" : (t("nav.home") === "Home" ? "Partner agencies" : "Agences partenaires"),
+        isRTL ? "خدمة موحدة" : (t("nav.home") === "Home" ? "Unified service" : "Service unifié"),
+      ],
+      category: "logistics"
+    },
+  ], [isRTL, t]);
+
+  const features = useMemo(() => {
+    if (dbServices.length > 0) {
+      return dbServices.map(s => ({
+        ...s,
+        icon: Zap,
+        highlights: s.highlights || []
+      }));
+    }
+    return defaultFeatures;
+  }, [dbServices, defaultFeatures]);
+
   const categories = [
-    { id: "all", label: isRTL ? "كل الخدمات" : (t("features.title") === "Premium Services" ? "All Services" : "Tous les services") },
+    { id: "all", label: isRTL ? "كل الخدمات" : (t("nav.home") === "Home" ? "All Services" : "Tous les services") },
     { id: "tech", label: isRTL ? "تكنولوجيا" : "Technologie" },
     { id: "security", label: isRTL ? "أمن" : "Sécurité" },
     { id: "service", label: isRTL ? "خدمة العملاء" : "Service Client" },
     { id: "logistics", label: isRTL ? "لوجستيات" : "Logistique" },
   ];
 
-  const filteredFeatures = features.filter((feature) => {
+  const filteredFeatures = features.filter((feature: any) => {
     if (activeFilter === "all") return true;
     if (activeFilter === "tech")
-      return feature.title.includes("IA") || feature.title.includes("Data");
+      return feature.title.includes("IA") || feature.title.includes("Data") || feature.title.includes("تكنولوجيا") || feature.title.includes("AI") || feature.category === "tech";
     if (activeFilter === "security")
       return (
         feature.title.includes("Sécurité") ||
-        feature.title.includes("Protection")
+        feature.title.includes("Protection") ||
+        feature.title.includes("أمن") ||
+        feature.title.includes("Security") ||
+        feature.category === "security"
       );
     if (activeFilter === "service")
       return (
         feature.title.includes("Conciergerie") ||
-        feature.title.includes("Support")
+        feature.title.includes("Support") ||
+        feature.title.includes("خدمة") ||
+        feature.title.includes("Concierge") ||
+        feature.category === "service"
       );
     if (activeFilter === "logistics")
       return (
-        feature.title.includes("Livraison") || feature.title.includes("Réseau")
+        feature.title.includes("Livraison") || feature.title.includes("Réseau") || feature.title.includes("لوجستيات") || feature.title.includes("Logistics") || feature.category === "logistics"
       );
     return true;
   });
@@ -335,7 +345,7 @@ export const Features = () => {
           <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 dark:from-blue-900/30 dark:to-cyan-900/30 px-4 py-2 rounded-full mb-6 animate-pulse">
             <Sparkles className="w-4 h-4 text-blue-600 dark:text-blue-400" />
             <span className="text-sm font-semibold text-blue-700 dark:text-blue-300 uppercase tracking-widest">
-              {isRTL ? "تميز معتمد" : (t("features.title") === "Premium Services" ? "Certified Excellence" : "Excellence Certifiée")}
+              {t("features.badge")}
             </span>
             <Star className="w-4 h-4 text-amber-500" />
           </div>
@@ -363,7 +373,7 @@ export const Features = () => {
                   10,000+
                 </div>
                 <div className="text-sm text-gray-500 dark:text-gray-400">
-                  Clients Satisfaits
+                  {t("features.stats.clients")}
                 </div>
               </div>
               <div className="text-center">
@@ -371,7 +381,7 @@ export const Features = () => {
                   99.7%
                 </div>
                 <div className="text-sm text-gray-500 dark:text-gray-400">
-                  Taux de Satisfaction
+                  {t("features.stats.satisfaction")}
                 </div>
               </div>
               <div className="text-center">
@@ -379,7 +389,7 @@ export const Features = () => {
                   24/7
                 </div>
                 <div className="text-sm text-gray-500 dark:text-gray-400">
-                  Support Premium
+                  {t("features.stats.support")}
                 </div>
               </div>
             </div>
@@ -405,9 +415,9 @@ export const Features = () => {
 
         {/* Features Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredFeatures.map((feature, index) => {
+          {filteredFeatures.map((feature: any, index) => {
             const Icon = feature.icon;
-            const colors = colorClasses[feature.color];
+            const colors = colorClasses[feature.color] || colorClasses.blue;
 
             return (
               <div
@@ -435,37 +445,16 @@ export const Features = () => {
                   <div
                     className={`relative w-20 h-20 rounded-2xl ${colors.bg} ${colors.hover} flex items-center justify-center transition-all duration-500 transform group-hover:scale-110 group-hover:rotate-12 overflow-hidden`}
                   >
-                    {/* Icon Glow */}
                     <div
                       className={`absolute inset-0 bg-gradient-to-r ${colors.gradient} opacity-0 group-hover:opacity-20 blur-md transition-opacity duration-500`}
                     />
-
-                    {/* Animated Icon */}
                     <div className="relative">
                       <Icon
                         className={`w-10 h-10 ${colors.icon} transition-all duration-500 group-hover:scale-125`}
                       />
-
-                      {/* Orbital Particles */}
-                      {[...Array(4)].map((_, i) => (
-                        <div
-                          key={i}
-                          className={`absolute w-2 h-2 rounded-full ${colors.light} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
-                          style={{
-                            animation: `orbitIcon ${
-                              2 + i * 0.5
-                            }s linear infinite`,
-                            animationDelay: `${i * 0.2}s`,
-                            transform: `rotate(${
-                              i * 90
-                            }deg) translateX(30px) rotate(-${i * 90}deg)`,
-                          }}
-                        />
-                      ))}
                     </div>
                   </div>
 
-                  {/* Stats Badge */}
                   <div
                     className={`absolute -top-2 -right-2 bg-gradient-to-r ${colors.gradient} text-white px-4 py-2 rounded-full font-bold text-sm shadow-lg animate-pulse-slow`}
                   >
@@ -473,27 +462,21 @@ export const Features = () => {
                   </div>
                 </div>
 
-                {/* Content */}
                 <div className="relative">
                   <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-blue-600 group-hover:to-cyan-600 group-hover:bg-clip-text transition-all duration-500">
                     {feature.title}
                   </h3>
-
                   <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed text-lg">
                     {feature.description}
                   </p>
-
-                  {/* Stats Label */}
                   <div
                     className={`text-sm font-semibold ${colors.icon} mb-6 flex items-center gap-2`}
                   >
                     <CheckCircle className="w-4 h-4" />
                     {feature.statLabel}
                   </div>
-
-                  {/* Highlights */}
                   <div className="space-y-3">
-                    {feature.highlights.map((highlight, i) => (
+                    {feature.highlights.map((highlight: string, i: number) => (
                       <div
                         key={i}
                         className="flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors duration-300"
@@ -505,15 +488,6 @@ export const Features = () => {
                       </div>
                     ))}
                   </div>
-
-                  {/* CTA Arrow */}
-                  <div className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-x-4 group-hover:translate-x-0">
-                    <div
-                      className={`w-12 h-12 rounded-full ${colors.light} flex items-center justify-center`}
-                    >
-                      <Zap className={`w-5 h-5 ${colors.icon}`} />
-                    </div>
-                  </div>
                 </div>
               </div>
             );
@@ -522,147 +496,40 @@ export const Features = () => {
 
         {/* CTA Section */}
         <div className="mt-32 relative">
-          {/* Animated Background */}
           <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-cyan-600 to-purple-600 rounded-4xl animate-gradient shadow-2xl overflow-hidden">
-            {/* Shimmer Effect */}
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-shimmer" />
-
-            {/* Floating Elements */}
-            {[...Array(12)].map((_, i) => (
-              <div
-                key={i}
-                className="absolute w-4 h-4 bg-white/30 rounded-full animate-float"
-                style={{
-                  animationDelay: `${i * 0.5}s`,
-                  left: `${Math.random() * 100}%`,
-                  top: `${Math.random() * 100}%`,
-                }}
-              />
-            ))}
           </div>
 
           <div className="relative p-12 lg:p-16 text-center">
-            {/* Title */}
-            <h2 className="text-4xl lg:text-5xl font-black text-white mb-6">
-              ÉLÉVEZ VOTRE EXPÉRIENCE AU NIVEAU SUPÉRIEUR
+            <h2 className="text-4xl lg:text-5xl font-black text-white mb-6 uppercase">
+              {t("features.cta.title")}
             </h2>
-
-            {/* Subtitle */}
             <p className="text-xl text-white/90 mb-12 max-w-3xl mx-auto">
-              Rejoignez l'élite des conducteurs et bénéficiez d'un service sans
-              compromis
+              {t("features.cta.subtitle")}
             </p>
-
-            {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
-              <div className="text-center p-6 bg-white/10 rounded-2xl backdrop-blur-sm">
-                <div className="text-3xl font-bold text-white">4.9★</div>
-                <div className="text-white/80 text-sm">Note moyenne</div>
-              </div>
-              <div className="text-center p-6 bg-white/10 rounded-2xl backdrop-blur-sm">
-                <div className="text-3xl font-bold text-white">24h</div>
-                <div className="text-white/80 text-sm">Support réponse</div>
-              </div>
-              <div className="text-center p-6 bg-white/10 rounded-2xl backdrop-blur-sm">
-                <div className="text-3xl font-bold text-white">100%</div>
-                <div className="text-white/80 text-sm">
-                  Satisfaction garantie
-                </div>
-              </div>
-              <div className="text-center p-6 bg-white/10 rounded-2xl backdrop-blur-sm">
-                <div className="text-3xl font-bold text-white">∞</div>
-                <div className="text-white/80 text-sm">Possibilités</div>
-              </div>
-            </div>
-
-            {/* CTA Buttons */}
             <div className="flex flex-wrap gap-6 justify-center">
               <button className="group bg-white text-blue-600 px-10 py-5 rounded-2xl font-bold text-lg hover:scale-105 transition-all duration-300 shadow-2xl hover:shadow-3xl relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-100/50 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                 <span className="relative flex items-center gap-3">
-                  Démarrer l'Expérience
+                  {t("features.cta.start")}
                   <Sparkles className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />
                 </span>
               </button>
-
-              <button className="group bg-transparent border-2 border-white text-white px-10 py-5 rounded-2xl font-bold text-lg hover:bg-white hover:text-blue-600 transition-all duration-300 hover:scale-105 relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-                <span className="relative flex items-center gap-3">
-                  Découvrir les Avantages
-                  <Award className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
-                </span>
-              </button>
             </div>
-
-            {/* Trust Badge */}
             <div className="mt-12 flex items-center justify-center gap-4 text-white/80">
               <ShieldCheck className="w-6 h-6" />
-              <span className="text-sm">
-                Garantie satisfaction 30 jours • Paiement 100% sécurisé •
-                Support prioritaire
-              </span>
+              <span className="text-sm">{t("features.cta.trust")}</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Custom Animations */}
       <style>{`
-        @keyframes gradient {
-          0%, 100% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-        }
-        
-        @keyframes float {
-          0%, 100% { transform: translateY(0) rotate(0deg); }
-          50% { transform: translateY(-20px) rotate(5deg); }
-        }
-        
-        @keyframes floatParticle {
-          0%, 100% { transform: translateY(0) translateX(0); }
-          50% { transform: translateY(-10px) translateX(10px); }
-        }
-        
-        @keyframes orbitIcon {
-          from { transform: rotate(0deg) translateX(30px) rotate(0deg); }
-          to { transform: rotate(360deg) translateX(30px) rotate(-360deg); }
-        }
-        
-        @keyframes gridMove {
-          0% { transform: translateY(0) translateX(0); }
-          100% { transform: translateY(-50px) translateX(-50px); }
-        }
-        
-        @keyframes shimmer {
-          0% { transform: translateX(-100%); }
-          100% { transform: translateX(100%); }
-        }
-        
-        @keyframes pulse-slow {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.5; }
-        }
-        
-        .animate-gradient {
-          animation: gradient 3s ease infinite;
-          background-size: 200% auto;
-        }
-        
-        .animate-float {
-          animation: float 3s ease-in-out infinite;
-        }
-        
-        .animate-shimmer {
-          animation: shimmer 2s infinite linear;
-        }
-        
-        .animate-pulse-slow {
-          animation: pulse-slow 2s ease-in-out infinite;
-        }
-        
-        .rounded-4xl {
-          border-radius: 2.5rem;
-        }
+        @keyframes gradient { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+        @keyframes gridMove { 0% { transform: translateY(0) translateX(0); } 100% { transform: translateY(-50px) translateX(-50px); } }
+        @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+        .animate-gradient { animation: gradient 3s ease infinite; background-size: 200% auto; }
+        .animate-shimmer { animation: shimmer 2s infinite linear; }
+        .rounded-4xl { border-radius: 2.5rem; }
       `}</style>
     </section>
   );

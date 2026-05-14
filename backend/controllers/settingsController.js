@@ -3,15 +3,32 @@ import { getCollection } from "../config/db.js";
 export const getSettings = async (req, res) => {
   try {
     const settings = getCollection("settings");
-    let data = await settings.findOne({});
+    let agencyId = req.query.agencyId || req.header("x-agency-id") || req.user?.agencyId || "default";
     
+    let data = await settings.findOne({ agencyId });
+    
+    // If we requested 'default' but the document is missing or has no images, 
+    // try to find ANY other settings document that might have been created.
+    if (agencyId === "default" && (!data || !data.galleryImages || data.galleryImages.length === 0)) {
+      const anyOtherSettings = await settings.findOne({ 
+        agencyId: { $ne: "default" },
+        galleryImages: { $exists: true, $not: { $size: 0 } }
+      });
+      if (anyOtherSettings) {
+        data = anyOtherSettings;
+      }
+    }
+
     const defaults = {
-      name: "LuxeDrive Premium",
-      email: "contact@luxedrive.ma",
-      phone: "+212 600 000 000",
-      address: "Boulevard d'Anfa, Casablanca",
+      agencyId: "default",
+      name: "AVENIR KAMIL CAR",
+      email: "contact@avenirkamilcar.ma",
+      phone: "+212 661 000 000",
+      address: "Casablanca, Maroc",
       currency: "DH",
       taxRate: "20",
+      logoUrl: "",
+      primaryColor: "#2563eb",
       galleryImages: [
         "https://images.pexels.com/photos/1237116/pexels-photo-1237116.jpeg",
         "https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg",
@@ -22,40 +39,28 @@ export const getSettings = async (req, res) => {
     };
 
     if (!data) {
-      data = { ...defaults };
+      data = { ...defaults, agencyId };
       await settings.insertOne(data);
-    } else {
-      // Force defaults if gallery is empty
-      let needsUpdate = false;
-      if (!data.galleryImages || data.galleryImages.length === 0) {
-        data.galleryImages = defaults.galleryImages;
-        needsUpdate = true;
-      }
-      if (!data.galleryVideoUrl) {
-        data.galleryVideoUrl = defaults.galleryVideoUrl;
-        needsUpdate = true;
-      }
-      if (needsUpdate) {
-        await settings.updateOne({ _id: data._id }, { $set: { 
-          galleryImages: data.galleryImages,
-          galleryVideoUrl: data.galleryVideoUrl 
-        }});
-      }
     }
+    
     res.json(data);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching settings" });
+    res.status(500).json({ message: "Error fetching settings", error: error.message });
   }
 };
 
 export const updateSettings = async (req, res) => {
   try {
     const settings = getCollection("settings");
+    const agencyId = req.user?.agencyId || "default";
     const updateData = { ...req.body };
     delete updateData._id;
-    await settings.updateOne({}, { $set: updateData }, { upsert: true });
+    delete updateData.agencyId;
+    
+    await settings.updateOne({ agencyId }, { $set: updateData }, { upsert: true });
     res.json({ message: "Settings updated successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Error updating settings" });
+    console.error("Error updating settings:", error);
+    res.status(500).json({ message: "Error updating settings", error: error.message });
   }
 };

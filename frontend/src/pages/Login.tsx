@@ -3,11 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { LogIn, Lock, Mail, ArrowRight, Car, UserPlus, User, ShieldCheck } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
+import { useLanguage } from "../contexts/LanguageContext";
 import { register as registerApi } from "../services/api";
 
 export function LoginPage() {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { t } = useLanguage();
   const [isLogin, setIsLogin] = useState(true);
   
   // Form States
@@ -32,10 +34,10 @@ export function LoginPage() {
       } else {
         await registerApi({ name, email, password });
         setIsLogin(true);
-        setError("Compte créé ! Connectez-vous maintenant.");
+        setError(t("auth.account_created"));
       }
     } catch (err) {
-      setError(isLogin ? "Identifiants invalides." : "Erreur lors de l'inscription.");
+      setError(isLogin ? t("auth.invalid_creds") : t("auth.register_error"));
     } finally {
       setIsSubmitting(false);
     }
@@ -64,10 +66,10 @@ export function LoginPage() {
               <Car className="text-white w-10 h-10" />
             </motion.div>
             <h2 className="text-4xl font-black text-white tracking-tight mb-2">
-              {isLogin ? "Bon Retour" : "Rejoignez l'Élite"}
+              {isLogin ? t("auth.login_title") : t("auth.register_title")}
             </h2>
             <p className="text-gray-400 font-medium">
-              {isLogin ? "Accédez à votre garage privé LuxeDrive" : "Créez votre compte client prestige"}
+              {isLogin ? t("auth.login_subtitle") : t("auth.register_subtitle")}
             </p>
           </div>
 
@@ -76,13 +78,13 @@ export function LoginPage() {
               onClick={() => setIsLogin(true)}
               className={`flex-1 py-3 rounded-xl font-bold text-sm transition-all ${isLogin ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
             >
-              Connexion
+              {t("auth.login_tab")}
             </button>
             <button 
               onClick={() => setIsLogin(false)}
               className={`flex-1 py-3 rounded-xl font-bold text-sm transition-all ${!isLogin ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
             >
-              Inscription
+              {t("auth.register_tab")}
             </button>
           </div>
 
@@ -90,7 +92,7 @@ export function LoginPage() {
             <motion.div 
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className={`p-4 rounded-2xl mb-8 text-sm font-bold text-center border ${error.includes('créé') ? 'bg-green-500/10 border-green-500 text-green-400' : 'bg-red-500/10 border-red-500 text-red-400'}`}
+              className={`p-4 rounded-2xl mb-8 text-sm font-bold text-center border ${error === t("auth.account_created") ? 'bg-green-500/10 border-green-500 text-green-400' : 'bg-red-500/10 border-red-500 text-red-400'}`}
             >
               {error}
             </motion.div>
@@ -105,7 +107,7 @@ export function LoginPage() {
                   exit={{ opacity: 0, height: 0 }}
                   className="space-y-2"
                 >
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-widest ml-1">Nom Complet</label>
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-widest ml-1">{t("auth.full_name")}</label>
                   <div className="relative group">
                     <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 w-5 h-5 group-focus-within:text-blue-500 transition-colors" />
                     <input 
@@ -122,7 +124,7 @@ export function LoginPage() {
             </AnimatePresence>
 
             <div className="space-y-2">
-              <label className="text-xs font-bold text-gray-500 uppercase tracking-widest ml-1">Email Professionnel</label>
+              <label className="text-xs font-bold text-gray-500 uppercase tracking-widest ml-1">{t("auth.email")}</label>
               <div className="relative group">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 w-5 h-5 group-focus-within:text-blue-500 transition-colors" />
                 <input 
@@ -137,7 +139,7 @@ export function LoginPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-bold text-gray-500 uppercase tracking-widest ml-1">Mot de Passe</label>
+              <label className="text-xs font-bold text-gray-500 uppercase tracking-widest ml-1">{t("auth.password")}</label>
               <div className="relative group">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 w-5 h-5 group-focus-within:text-blue-500 transition-colors" />
                 <input 
@@ -156,7 +158,7 @@ export function LoginPage() {
               disabled={isSubmitting}
               className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-5 rounded-2xl flex items-center justify-center gap-3 transition-all shadow-xl shadow-blue-600/20 disabled:opacity-50 mt-4"
             >
-              {isSubmitting ? "Traitement..." : (isLogin ? "Se Connecter" : "Créer mon Compte")} 
+              {isSubmitting ? t("auth.processing") : (isLogin ? t("auth.login_btn") : t("auth.register_btn"))} 
               <ArrowRight className="w-5 h-5" />
             </button>
           </form>
@@ -164,7 +166,7 @@ export function LoginPage() {
           <div className="mt-8 pt-8 border-t border-white/5 text-center">
             <div className="flex items-center justify-center gap-2 text-gray-500 text-xs font-bold uppercase tracking-widest">
               <ShieldCheck className="w-4 h-4 text-blue-500" />
-              Connexion Sécurisée SSL 256-bit
+              {t("auth.secure_login")}
             </div>
           </div>
         </div>

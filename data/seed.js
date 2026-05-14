@@ -23,7 +23,7 @@ async function seed() {
 
     // Seed Admin User
     const adminUser = {
-      name: "Administrateur LuxeDrive",
+      name: "Administrateur AVENIR KAMIL CAR",
       email: "admin@test.com",
       password: "admin123", // In production, use hashed passwords
       role: "admin"

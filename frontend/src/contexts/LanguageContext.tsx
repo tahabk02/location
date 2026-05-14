@@ -17,6 +17,7 @@ const translations: Record<Language, any> = { fr, en, ar };
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  console.log("LanguageProvider rendering");
   const [language, setLanguage] = useState<Language>(
     (localStorage.getItem("language") as Language) || "fr"
   );

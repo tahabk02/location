@@ -6,32 +6,359 @@
     "gallery": "Galerie",
     "client_space": "Espace Client",
     "admin_space": "Espace Admin",
-    "logout": "Déconnexion"
+    "logout": "Déconnexion",
+    "language": "Langue"
+  },
+  "common": {
+    "loading": "Chargement...",
+    "error": "Une erreur est survenue",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "add": "Ajouter",
+    "confirm": "Confirmer",
+    "search": "Rechercher",
+    "actions": "Actions",
+    "date": "Date",
+    "amount": "Montant",
+    "status": "Statut",
+    "category": "Catégorie",
+    "description": "Description",
+    "currency": "DH",
+    "day": "jour",
+    "all": "Tous",
+    "status_pending": "En attente",
+    "status_confirmed": "Confirmé",
+    "status_cancelled": "Annulé",
+    "status_completed": "Terminé",
+    "client": "Client",
+    "to": "au",
+    "no_results": "Aucune donnée disponible"
+  },
+  "inventory": {
+    "maintenance": "Maintenance",
+    "consumables": "Consommables",
+    "parts": "Pièces",
+    "cleaning": "Nettoyage"
+  },
+  "crm": {
+    "no_history": "Aucune réservation pour ce client."
+  },
+  "whatsapp": {
+    "message": "Bonjour {name}, votre réservation pour la {car} du {start} au {end} est confirmée. Total: {total} {currency}. Merci de votre confiance!"
   },
   "hero": {
     "title": "Louez l'Excellence, Conduisez le Luxe",
     "subtitle": "Découvrez notre flotte exclusive de véhicules premium pour vos déplacements au Maroc.",
-    "cta": "Réserver maintenant"
+    "cta": "Réserver maintenant",
+    "stats": {
+      "speed": "Vitesse",
+      "energy": "Énergie",
+      "temp": "Température"
+    },
+    "controls": {
+      "title": "Contrôles Intelligents",
+      "connected": "Connecté",
+      "navigation": "Navigation",
+      "connectivity": "Connectivité",
+      "gps": "GPS Premium",
+      "climate": "Climatisation",
+      "purifier": "Purificateur",
+      "weather": "Météo"
+    },
+    "specs": {
+      "title": "Spécifications Quantiques",
+      "ai": "IA INTÉGRÉE",
+      "connectivity": "CONNECTIVITÉ"
+    },
+    "price_tag": {
+      "all_inclusive": "JOUR • TOUT INCLUS",
+      "unlimited": "Illimité",
+      "insurance": "Assurance",
+      "premium": "Premium"
+    },
+    "footer": {
+      "active": "Système actif",
+      "connected": "Connecté au réseau",
+      "explore": "EXPLORER LE CATALOGUE",
+      "book": "RÉSERVER"
+    }
   },
   "gallery": {
     "title": "Galerie photo & vidéo",
-    "subtitle": "Découvrez plus de photos de nos véhicules de luxe et une vidéo immersive."
+    "subtitle": "Découvrez plus de photos de nos véhicules de luxe et une vidéo immersive.",
+    "video_title": "Vidéo de présentation",
+    "collection_title": "Notre collection",
+    "collection_desc": "Ces images présentent les véhicules premium disponibles à la location.",
+    "stats_images": "Images de galerie",
+    "stats_video": "Vidéo immersive",
+    "empty": "Galerie Vide",
+    "add_btn": "AJOUTER À LA GALERIE",
+    "url_placeholder": "https://..."
   },
   "features": {
     "title": "Services Premium",
-    "subtitle": "Une expérience de location sur mesure pour vos besoins les plus exigeants."
+    "subtitle": "Une expérience de location sur mesure pour vos besoins les plus exigeants.",
+    "badge": "Excellence Certifiée",
+    "stats": {
+      "clients": "Clients Satisfaits",
+      "satisfaction": "Taux de Satisfaction",
+      "support": "Support Premium"
+    },
+    "cta": {
+      "title": "ÉLÉVEZ VOTRE EXPÉRIENCE AU NIVEAU SUPÉRIEUR",
+      "subtitle": "Rejoignez l'élite des conducteurs et bénéficiez d'un service sans compromis",
+      "start": "Démarrer l'Expérience",
+      "discover": "Découvrir les Avantages",
+      "trust": "Garantie satisfaction 30 jours • Paiement 100% sécurisé • Support prioritaire"
+    }
   },
   "cars": {
     "title": "Notre Flotte Exclusive",
     "subtitle": "Performance, confort et prestige à chaque trajet.",
     "view_details": "Voir détails",
-    "book_now": "Réserver"
+    "book_now": "Réserver",
+    "available": "LIBRE",
+    "rented": "OCCUPÉ",
+    "price_day": "Prix / Jour",
+    "fuel": "Énergie",
+    "seats": "Sièges",
+    "speed": "Vitesse",
+    "brand": "Marque",
+    "model": "Modèle",
+    "sync": "Synchronisation de la flotte...",
+    "empty": "Aucun véhicule disponible",
+    "empty_desc": "Revenez plus tard pour découvrir notre nouvelle collection."
+  },
+  "auth": {
+    "login_title": "Bon Retour",
+    "register_title": "Rejoignez l'Élite",
+    "login_subtitle": "Accédez à votre garage privé AVENIR KAMIL CAR",
+    "register_subtitle": "Créez votre compte client prestige",
+    "login_tab": "Connexion",
+    "register_tab": "Inscription",
+    "full_name": "Nom Complet",
+    "email": "Email Professionnel",
+    "password": "Mot de Passe",
+    "login_btn": "Se Connecter",
+    "register_btn": "Créer mon Compte",
+    "processing": "Traitement...",
+    "secure_login": "Connexion Sécurisée SSL 256-bit",
+    "account_created": "Compte créé ! Connectez-vous maintenant.",
+    "invalid_creds": "Identifiants invalides.",
+    "register_error": "Erreur lors de l'inscription."
+  },
+  "admin": {
+    "suite": "Business Suite",
+    "management": "Gestion & Performance",
+    "dashboard": {
+      "live_performance": "Performance Live",
+      "no_data": "Aucune donnée disponible",
+      "reservations_registry": "Registre des Réservations",
+      "ref_vehicle": "Référence / Véhicule",
+      "period": "Période",
+      "no_reservations": "Aucune réservation enregistrée",
+      "total_revenue": "Chiffre d'affaires total",
+      "excellent": "Excellent",
+      "no_expenses": "Aucun frais enregistré",
+      "fleet_management": "Gestion de la Flotte",
+      "services_management": "Gestion des Services",
+      "add_service": "AJOUTER UN SERVICE",
+      "no_services": "Aucun service personnalisé",
+      "fleet_control": "Tour de Contrôle Flotte",
+      "oil_change_label": "Vidange:",
+      "insurance_label": "Assurance:",
+      "available": "Libre",
+      "workshop": "Atelier",
+      "contract_validation": "Validation contrat",
+      "clear": "EFFACER",
+      "validate_generate": "VALIDER & GÉNÉRER",
+      "vehicle_photos": "Photos du véhicule",
+      "notes_observations": "Notes & Observations",
+      "alert_live_system": "Système Alert Live"
+    },
+    "accounting": {
+      "suite_title": "Suite Comptable Professionnelle",
+      "suite_subtitle": "Analyse de Performance & Fiscalité | Avenir Kamil Car",
+      "all": "Tout",
+      "month": "Mois",
+      "year": "Année",
+      "pdf_report": "Rapport PDF",
+      "revenue": "Chiffre d'Affaires",
+      "total_expenses": "Dépenses Totales",
+      "profit_margin": "Marge Bénéficiaire",
+      "optimal_performance": "Performance Optimale",
+      "est_taxation": "Fiscalité Est.",
+      "tva_tax_prof": "TVA + Taxe Prof.",
+      "cash_flow": "Flux de Trésorerie",
+      "monthly_analysis": "Analyse Mensuelle des Revenus & Dépenses",
+      "detailed_reports": "Consulter les Rapports Détaillés",
+      "toggle_period": "Basculer Période",
+      "reset_filters": "Reset Filters",
+      "revenues": "Revenus",
+      "expenses": "Dépenses",
+      "tax_calculator": "Calculatrice Fiscale",
+      "taxation_details": "Détails de l'imposition (Est.)",
+      "real_net_profit": "Bénéfice Net Réel",
+      "pl_forecast": "Prévisions P/L",
+      "next_month_projection": "Projection mois prochain",
+      "trend_based": "Basé sur les tendances actuelles (+5%)",
+      "config_tax_alerts": "Configurer les Alertes Fiscales",
+      "ledger_title": "Grand Livre des Écritures",
+      "ledger_subtitle": "Détails de toutes les transactions financières",
+      "all_categories": "Toutes Catégories",
+      "personnel": "Personnel",
+      "rent": "Loyer",
+      "add_entry": "Ajouter une Écriture",
+      "date_ref": "Date & Réf",
+      "type": "Type",
+      "amount": "Montant",
+      "status": "Statut",
+      "credit": "Crédit",
+      "debit": "Débit",
+      "recorded": "Enregistré",
+      "load_more": "Charger plus d'écritures",
+      "end_history": "Fin de l'historique",
+      "tax_settings": "Paramètres Fiscaux",
+      "tax_settings_help": "Ces taux affectent uniquement les calculs de prévisualisation dans la Suite Comptable.",
+      "tva_rate": "Taux TVA",
+      "est_professional_tax": "Taxe Professionnelle Est.",
+      "save_settings": "Enregistrer les Paramètres"
+    },
+    "tabs": {
+      "dashboard": "Dashboard",
+      "fleet": "Flotte",
+      "sales": "Ventes",
+      "analytics": "Analyses",
+      "expenses": "Frais",
+      "gallery": "Galerie",
+      "settings": "Réglages",
+      "planning": "Planning",
+      "inventory": "Inventaire",
+      "crm": "CRM"
+    },
+    "planning": {
+      "title": "Planning de la Flotte",
+      "subtitle": "Vision panoramique des réservations",
+      "vehicles": "Véhicules"
+    },
+    "inventory": {
+      "title": "Gestion du Stock & Inventaire",
+      "subtitle": "Maintenance et consommables",
+      "add_btn": "AJOUTER UN ARTICLE",
+      "designation": "Désignation",
+      "stock": "Stock",
+      "unit_price": "Prix Unit.",
+      "empty": "Inventaire vide",
+      "items": "Articles"
+    },
+    "crm": {
+      "title": "Gestion de la Relation Client (CRM)",
+      "search_placeholder": "Rechercher un client...",
+      "loyalty_points": "Points Fidélité",
+      "history": "Historique",
+      "blacklist": "Blacklisté",
+      "elite": "Elite",
+      "premium": "Premium",
+      "gold": "Gold",
+      "ban": "Blacklister",
+      "unban": "Désactiver Blacklist",
+      "reservations": "Réservations"
+    },
+    "inspection": {
+      "title": "État des Lieux",
+      "check_in": "Départ du véhicule",
+      "check_out": "Retour du véhicule",
+      "photos": "Photos du véhicule",
+      "notes": "Notes & Observations",
+      "validate": "Valider l'État des Lieux",
+      "placeholder": "Signalez les rayures, le niveau de carburant, etc..."
+    },
+    "charts": {
+      "flux": "Flux Financier Semestriel",
+      "performance": "Performance Flotte",
+      "volume": "Volume de Réservations",
+      "repartition": "Répartition Flotte",
+      "health": "Score de Santé Business",
+      "profitability_cat": "Rentabilité par Catégorie",
+      "cash_flow": "Flux Trésorerie",
+      "rev_vs_exp": "Revenus vs Dépenses"
+    },
+    "fleet": {
+      "add_car": "AJOUTER UN VÉHICULE",
+      "edit_car": "Modifier le Véhicule",
+      "car_brand": "Marque Automobile",
+      "car_model": "Modèle",
+      "price_day": "Prix / Jour",
+      "fuel": "Énergie",
+      "media": "Médias (Photos)",
+      "video_link": "Lien Vidéo (YouTube/MP4)",
+      "insurance": "Assurance Expir.",
+      "tech_visit": "Visite Techn.",
+      "vignette": "Vignette Expir.",
+      "last_oil": "Dernier Vidange (KM)",
+      "next_oil": "Prochain Vidange (KM)"
+    },
+    "expenses": {
+      "title": "Gestion des Frais",
+      "add_btn": "ENREGISTREMENT UN FRAIS",
+      "total": "Total Dépenses",
+      "count": "Nombre d'opérations",
+      "average": "Moyenne / Frais",
+      "designation": "Désignation du frais",
+      "category": "Catégorie",
+      "amount": "Montant",
+      "vehicle": "Véhicule (Optionnel)"
+    },
+    "settings": {
+      "profile": "Profil de l'Agence",
+      "logo": "Logo de l'Agence",
+      "change_logo": "CHANGER LE LOGO",
+      "commercial_name": "Nom Commercial",
+      "contact_email": "Email Contact",
+      "currency": "Devise",
+      "tax": "TVA (%)",
+      "update_btn": "METTRE À JOUR LES PARAMÈTRES"
+    },
+    "exports": {
+      "pdf": "EXPORTER PDF",
+      "excel": "EXPORTER EXCEL"
+    }
   },
   "footer": {
-    "about": "Leader de la location de véhicules premium au Maroc.",
+    "about": "Leader de la location de véhicules premium au Maroc. Nous redéfinissons l'expérience de mobilité grâce à notre flotte exclusive et notre service sur mesure.",
+    "excellence": "L'excellence automobile",
     "address": "Adresse",
     "phone": "Téléphone",
     "email": "Email",
-    "rights": "Tous droits réservés."
+    "rights": "Tous droits réservés.",
+    "made_with": "Fait avec passion au Maroc",
+    "follow_us": "Suivez-nous :",
+    "payments": "Paiements acceptés :",
+    "newsletter": {
+      "title": "Newsletter Exclusive",
+      "desc": "Recevez en avant-première nos offres spéciales et nouveautés.",
+      "placeholder": "Votre email",
+      "btn": "S'abonner",
+      "success": "Merci pour votre inscription !",
+      "policy": "En vous inscrivant, vous acceptez notre politique de confidentialité."
+    },
+    "quick_links": {
+      "title": "Navigation Rapide",
+      "fleet": "Flotte Premium",
+      "services": "Services VIP",
+      "reservation": "Réservation Express",
+      "offers": "Offres Spéciales"
+    },
+    "services": {
+      "title": "Nos Services",
+      "long_term": "Location longue durée",
+      "delivery": "Livraison à domicile",
+      "chauffeur": "Service avec chauffeur",
+      "event": "Forfait événementiel",
+      "shooting": "Location pour tournage",
+      "loyalty": "Programme fidélité"
+    }
   }
 }

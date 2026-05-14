@@ -5,6 +5,7 @@ import { LanguageProvider } from "./contexts/LanguageContext";
 import { HomePage } from "./pages/Home";
 import { LoginPage } from "./pages/Login";
 import AdminDashboard from "./pages/AdminDashboard";
+import SuperAdminDashboard from "./pages/SuperAdminDashboard";
 import ClientDashboard from "./pages/ClientDashboard";
 import CarCatalog from "./pages/CarCatalog";
 import { CarDetails } from "./components/CarDetails";
@@ -32,8 +33,8 @@ const ProtectedRoute = ({ children, role }: { children: JSX.Element; role?: stri
 function App() {
   return (
     <Router>
-      <AuthProvider>
-        <LanguageProvider>
+      <LanguageProvider>
+        <AuthProvider>
           <ThemeProvider>
             <div className="relative">
               <Routes>
@@ -52,6 +53,15 @@ function App() {
                 />
 
                 <Route 
+                  path="/superadmin" 
+                  element={
+                    <ProtectedRoute role="superadmin">
+                      <SuperAdminDashboard />
+                    </ProtectedRoute>
+                  } 
+                />
+
+                <Route 
                   path="/client" 
                   element={
                     <ProtectedRoute role="client">
@@ -65,8 +75,8 @@ function App() {
               <FloatingWhatsApp />
             </div>
           </ThemeProvider>
-        </LanguageProvider>
-      </AuthProvider>
+        </AuthProvider>
+      </LanguageProvider>
     </Router>
   );
 }

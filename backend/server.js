@@ -8,6 +8,12 @@ import bookingRoutes from "./routes/bookingRoutes.js";
 import expenseRoutes from "./routes/expenseRoutes.js";
 import settingsRoutes from "./routes/settingsRoutes.js";
 import promoRoutes from "./routes/promoRoutes.js";
+import agencyRoutes from "./routes/agencyRoutes.js";
+import serviceRoutes from "./routes/serviceRoutes.js";
+import reviewRoutes from "./routes/reviewRoutes.js";
+import notificationRoutes from "./routes/notificationRoutes.js";
+import analyticsRoutes from "./routes/analyticsRoutes.js";
+import inventoryRoutes from "./routes/inventoryRoutes.js";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -33,9 +39,15 @@ app.use("/api/bookings", bookingRoutes);
 app.use("/api/expenses", expenseRoutes);
 app.use("/api/settings", settingsRoutes);
 app.use("/api/promos", promoRoutes);
+app.use("/api/agencies", agencyRoutes);
+app.use("/api/services", serviceRoutes);
+app.use("/api/reviews", reviewRoutes);
+app.use("/api/notifications", notificationRoutes);
+app.use("/api/analytics", analyticsRoutes);
+app.use("/api/inventory", inventoryRoutes);
 
 app.get("/api/health", (_req, res) => {
-  res.json({ status: "ok", message: "LuxeDrive Backend is running." });
+  res.json({ status: "ok", message: "AVENIR KAMIL CAR Backend is running." });
 });
 
 // Start Server
@@ -43,7 +55,7 @@ const start = async () => {
   try {
     await connectDB();
     app.listen(port, () => {
-      console.log(`🚀 LuxeDrive Backend listening at http://localhost:${port}`);
+      console.log(`🚀 AVENIR KAMIL CAR Backend listening at http://localhost:${port}`);
     });
   } catch (error) {
     console.error("Failed to start server:", error);

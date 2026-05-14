@@ -106,8 +106,15 @@ export default function CarCatalog() {
                   </div>
                 </div>
 
-                <button className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black rounded-2xl shadow-lg shadow-blue-500/20 transition-all flex items-center justify-center gap-2 group-hover:scale-105">
-                  RÉSERVER MAINTENANT
+                <button 
+                  disabled={car.available === false}
+                  className={`w-full py-4 font-black rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2 ${
+                    car.available !== false 
+                      ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-blue-500/20 hover:scale-105" 
+                      : "bg-gray-300 dark:bg-gray-700 text-gray-500 cursor-not-allowed"
+                  }`}
+                >
+                  {car.available !== false ? "RÉSERVER MAINTENANT" : "DÉJÀ RÉSERVÉ"}
                   <ChevronRight size={18} />
                 </button>
               </div>

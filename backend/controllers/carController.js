@@ -4,7 +4,11 @@ import { ObjectId } from "mongodb";
 export const getAllCars = async (req, res) => {
   try {
     const cars = getCollection("cars");
-    const list = await cars.find({}).toArray();
+    // Filter by agencyId if provided in query (for public) or from user (for admin)
+    const agencyId = req.query.agencyId || req.user?.agencyId || "default";
+    const list = await cars.find({ 
+      $or: [{ agencyId }, { agencyId: { $exists: false } }] 
+    }).toArray();
     res.json(list);
   } catch (error) {
     res
@@ -15,11 +19,16 @@ export const getAllCars = async (req, res) => {
 
 export const getCarById = async (req, res) => {
   try {
+    const { id } = req.params;
+    if (!ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid car ID format" });
+    }
     const cars = getCollection("cars");
-    const car = await cars.findOne({ _id: new ObjectId(req.params.id) });
+    const car = await cars.findOne({ _id: new ObjectId(id) });
     if (!car) return res.status(404).json({ message: "Car not found" });
     res.json(car);
   } catch (error) {
+    console.error("Error fetching car:", error);
     res
       .status(500)
       .json({ message: "Error fetching car", error: error.message });
@@ -28,7 +37,8 @@ export const getCarById = async (req, res) => {
 
 export const createCar = async (req, res) => {
   try {
-    console.log("📥 Creating car:", req.body.brand, req.body.model);
+    const agencyId = req.user?.agencyId || "default";
+    console.log(`📥 Creating car for agency ${agencyId}:`, req.body.brand, req.body.model);
     const cars = getCollection("cars");
     const images = Array.isArray(req.body.images)
       ? req.body.images
@@ -37,6 +47,7 @@ export const createCar = async (req, res) => {
         : [];
 
     const carData = {
+      agencyId,
       brand: req.body.brand,
       model: req.body.model,
       category: req.body.category || "Luxe",
@@ -48,6 +59,12 @@ export const createCar = async (req, res) => {
       images,
       videoUrl: req.body.videoUrl || "",
       available: req.body.available !== undefined ? req.body.available : true,
+      status: req.body.status || "available",
+      insuranceExpiry: req.body.insuranceExpiry || null,
+      technicalVisitExpiry: req.body.technicalVisitExpiry || null,
+      vignetteExpiry: req.body.vignetteExpiry || null,
+      lastOilChangeKm: Number(req.body.lastOilChangeKm) || null,
+      nextOilChangeKm: Number(req.body.nextOilChangeKm) || null,
       createdAt: new Date(),
     };
 
@@ -66,6 +83,7 @@ export const updateCar = async (req, res) => {
   try {
     const cars = getCollection("cars");
     const { id } = req.params;
+    const agencyId = req.user?.agencyId || "default";
 
     const updateData = { ...req.body };
     if (updateData.pricePerDay)
@@ -78,8 +96,17 @@ export const updateCar = async (req, res) => {
       updateData.image = updateData.images[0];
     }
     delete updateData._id;
+    delete updateData.agencyId; // Don't allow changing agency
 
-    await cars.updateOne({ _id: new ObjectId(id) }, { $set: updateData });
+    const result = await cars.updateOne(
+      { _id: new ObjectId(id), agencyId }, 
+      { $set: updateData }
+    );
+    
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ message: "Car not found or unauthorized" });
+    }
+    
     res.json({ message: "Car updated successfully" });
   } catch (error) {
     res
@@ -91,11 +118,74 @@ export const updateCar = async (req, res) => {
 export const deleteCar = async (req, res) => {
   try {
     const cars = getCollection("cars");
-    await cars.deleteOne({ _id: new ObjectId(req.params.id) });
+    const agencyId = req.user?.agencyId || "default";
+    const result = await cars.deleteOne({ _id: new ObjectId(req.params.id), agencyId });
+    
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ message: "Car not found or unauthorized" });
+    }
+    
     res.json({ message: "Car deleted successfully" });
   } catch (error) {
     res
       .status(500)
       .json({ message: "Error deleting car", error: error.message });
+  }
+};
+
+export const updateCarStatus = async (req, res) => {
+  try {
+    const cars = getCollection("cars");
+    const { id } = req.params;
+    const { status, available } = req.body;
+    const agencyId = req.user?.agencyId || "default";
+    
+    await cars.updateOne(
+      { _id: new ObjectId(id), agencyId },
+      { $set: { status, available, updatedAt: new Date() } }
+    );
+    res.json({ message: "Car status updated successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error updating car status", error: error.message });
+  }
+};
+
+export const getMaintenanceAlerts = async (req, res) => {
+  try {
+    const cars = getCollection("cars");
+    const agencyId = req.user?.agencyId || "default";
+    console.log(`🔍 Fetching maintenance alerts for agency: ${agencyId}`);
+    
+    // Fetch all cars for this agency
+    const allCars = await cars.find({ agencyId }).toArray();
+    console.log(`📊 Found ${allCars.length} cars to check for alerts`);
+    
+    const today = new Date();
+    const fifteenDaysLater = new Date(today.getTime() + (15 * 24 * 60 * 60 * 1000));
+    const fifteenDaysStr = fifteenDaysLater.toISOString().split('T')[0];
+
+    const alerts = allCars.filter(car => {
+      try {
+        const hasExpiryAlert = (car.insuranceExpiry && car.insuranceExpiry <= fifteenDaysStr) ||
+                              (car.technicalVisitExpiry && car.technicalVisitExpiry <= fifteenDaysStr) ||
+                              (car.vignetteExpiry && car.vignetteExpiry <= fifteenDaysStr);
+        
+        // Safety check for numeric values
+        const nextOil = Number(car.nextOilChangeKm);
+        const lastOil = Number(car.lastOilChangeKm);
+        const hasOilAlert = !isNaN(nextOil) && !isNaN(lastOil) && nextOil > 0 && (nextOil - lastOil <= 1000);
+        
+        return hasExpiryAlert || hasOilAlert;
+      } catch (e) {
+        console.error(`Error processing alert for car ${car._id}:`, e);
+        return false;
+      }
+    });
+    
+    console.log(`✅ Found ${alerts.length} active alerts`);
+    res.json(alerts);
+  } catch (error) {
+    console.error("Error fetching alerts:", error);
+    res.status(500).json({ message: "Error fetching alerts", error: error.message });
   }
 };

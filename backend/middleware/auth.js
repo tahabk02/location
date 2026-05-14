@@ -4,16 +4,22 @@ export const authorize = (roles = []) => {
     // For now, we use a custom header to simulate this
     const userRole = req.header("x-user-role")?.toLowerCase();
     const userId = req.header("x-user-id");
+    const agencyId = req.header("x-agency-id") || "default";
 
     if (!userRole) {
       return res.status(401).json({ message: "Authentication required." });
     }
 
     if (roles.length && !roles.includes(userRole)) {
-      return res.status(403).json({ message: "Forbidden: Access denied." });
+      // Superadmin has access to everything admin has
+      if (userRole === "superadmin" && roles.includes("admin")) {
+        // Allow
+      } else {
+        return res.status(403).json({ message: "Forbidden: Access denied." });
+      }
     }
 
-    req.user = { id: userId, role: userRole };
+    req.user = { id: userId, role: userRole, agencyId: agencyId };
     next();
   };
 };

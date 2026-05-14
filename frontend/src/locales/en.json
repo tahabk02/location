@@ -6,32 +6,359 @@
     "gallery": "Gallery",
     "client_space": "Client Space",
     "admin_space": "Admin Space",
-    "logout": "Logout"
+    "logout": "Logout",
+    "language": "Language"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "confirm": "Confirm",
+    "search": "Search",
+    "actions": "Actions",
+    "date": "Date",
+    "amount": "Amount",
+    "status": "Status",
+    "category": "Category",
+    "description": "Description",
+    "currency": "$",
+    "day": "day",
+    "all": "All",
+    "status_pending": "Pending",
+    "status_confirmed": "Confirmed",
+    "status_cancelled": "Cancelled",
+    "status_completed": "Completed",
+    "client": "Client",
+    "to": "to",
+    "no_results": "No data available"
+  },
+  "inventory": {
+    "maintenance": "Maintenance",
+    "consumables": "Consumables",
+    "parts": "Parts",
+    "cleaning": "Cleaning"
+  },
+  "crm": {
+    "no_history": "No bookings for this client."
+  },
+  "whatsapp": {
+    "message": "Hello {name}, your booking for the {car} from {start} to {end} is confirmed. Total: {total} {currency}. Thank you for your trust!"
   },
   "hero": {
     "title": "Rent Excellence, Drive Luxury",
     "subtitle": "Discover our exclusive fleet of premium vehicles for your travels in Morocco.",
-    "cta": "Book Now"
+    "cta": "Book Now",
+    "stats": {
+      "speed": "Speed",
+      "energy": "Energy",
+      "temp": "Temperature"
+    },
+    "controls": {
+      "title": "Smart Controls",
+      "connected": "Connected",
+      "navigation": "Navigation",
+      "connectivity": "Connectivity",
+      "gps": "Premium GPS",
+      "climate": "Climate Control",
+      "purifier": "Purifier",
+      "weather": "Weather"
+    },
+    "specs": {
+      "title": "Quantum Specifications",
+      "ai": "INTEGRATED AI",
+      "connectivity": "CONNECTIVITY"
+    },
+    "price_tag": {
+      "all_inclusive": "DAY • ALL INCLUSIVE",
+      "unlimited": "Unlimited",
+      "insurance": "Insurance",
+      "premium": "Premium"
+    },
+    "footer": {
+      "active": "System Active",
+      "connected": "Network Connected",
+      "explore": "EXPLORE CATALOG",
+      "book": "BOOK NOW"
+    }
   },
   "gallery": {
     "title": "Photo & Video Gallery",
-    "subtitle": "Discover more photos of our luxury vehicles and an immersive video."
+    "subtitle": "Discover more photos of our luxury vehicles and an immersive video.",
+    "video_title": "Presentation Video",
+    "collection_title": "Our Collection",
+    "collection_desc": "These images present the premium vehicles available for rental.",
+    "stats_images": "Gallery Images",
+    "stats_video": "Immersive Video",
+    "empty": "Empty Gallery",
+    "add_btn": "ADD TO GALLERY",
+    "url_placeholder": "https://..."
   },
   "features": {
     "title": "Premium Services",
-    "subtitle": "A tailored rental experience for your most demanding needs."
+    "subtitle": "A tailored rental experience for your most demanding needs.",
+    "badge": "Certified Excellence",
+    "stats": {
+      "clients": "Satisfied Clients",
+      "satisfaction": "Satisfaction Rate",
+      "support": "Premium Support"
+    },
+    "cta": {
+      "title": "ELEVATE YOUR EXPERIENCE TO THE NEXT LEVEL",
+      "subtitle": "Join the elite of drivers and benefit from uncompromising service",
+      "start": "Start Experience",
+      "discover": "Discover Benefits",
+      "trust": "30-day satisfaction guarantee • 100% secure payment • Priority support"
+    }
   },
   "cars": {
     "title": "Our Exclusive Fleet",
     "subtitle": "Performance, comfort, and prestige in every journey.",
     "view_details": "View Details",
-    "book_now": "Book Now"
+    "book_now": "Book Now",
+    "available": "AVAILABLE",
+    "rented": "OCCUPIED",
+    "price_day": "Price / Day",
+    "fuel": "Fuel",
+    "seats": "Seats",
+    "speed": "Speed",
+    "brand": "Brand",
+    "model": "Model",
+    "sync": "Syncing fleet...",
+    "empty": "No vehicles available",
+    "empty_desc": "Come back later to discover our new collection."
+  },
+  "auth": {
+    "login_title": "Welcome Back",
+    "register_title": "Join the Elite",
+    "login_subtitle": "Access your AVENIR KAMIL CAR private garage",
+    "register_subtitle": "Create your prestige client account",
+    "login_tab": "Login",
+    "register_tab": "Register",
+    "full_name": "Full Name",
+    "email": "Professional Email",
+    "password": "Password",
+    "login_btn": "Sign In",
+    "register_btn": "Create Account",
+    "processing": "Processing...",
+    "secure_login": "Secure 256-bit SSL Connection",
+    "account_created": "Account created! Please log in.",
+    "invalid_creds": "Invalid credentials.",
+    "register_error": "Registration error."
+  },
+  "admin": {
+    "suite": "Business Suite",
+    "management": "Management & Performance",
+    "dashboard": {
+      "live_performance": "Live Performance",
+      "no_data": "No data available",
+      "reservations_registry": "Reservations Registry",
+      "ref_vehicle": "Reference / Vehicle",
+      "period": "Period",
+      "no_reservations": "No reservations recorded",
+      "total_revenue": "Total Revenue",
+      "excellent": "Excellent",
+      "no_expenses": "No expenses recorded",
+      "fleet_management": "Fleet Management",
+      "services_management": "Services Management",
+      "add_service": "ADD SERVICE",
+      "no_services": "No custom services",
+      "fleet_control": "Fleet Control Tower",
+      "oil_change_label": "Oil Change:",
+      "insurance_label": "Insurance:",
+      "available": "Available",
+      "workshop": "Workshop",
+      "contract_validation": "Contract Validation",
+      "clear": "CLEAR",
+      "validate_generate": "VALIDATE & GENERATE",
+      "vehicle_photos": "Vehicle Photos",
+      "notes_observations": "Notes & Observations",
+      "alert_live_system": "Live Alert System"
+    },
+    "accounting": {
+      "suite_title": "Professional Accounting Suite",
+      "suite_subtitle": "Performance & Tax Analysis | Avenir Kamil Car",
+      "all": "All",
+      "month": "Month",
+      "year": "Year",
+      "pdf_report": "PDF Report",
+      "revenue": "Revenue",
+      "total_expenses": "Total Expenses",
+      "profit_margin": "Profit Margin",
+      "optimal_performance": "Optimal Performance",
+      "est_taxation": "Est. Taxation",
+      "tva_tax_prof": "VAT + Prof. Tax",
+      "cash_flow": "Cash Flow",
+      "monthly_analysis": "Monthly Revenue & Expense Analysis",
+      "detailed_reports": "View Detailed Reports",
+      "toggle_period": "Toggle Period",
+      "reset_filters": "Reset Filters",
+      "revenues": "Revenues",
+      "expenses": "Expenses",
+      "tax_calculator": "Tax Calculator",
+      "taxation_details": "Taxation Details (Est.)",
+      "real_net_profit": "Real Net Profit",
+      "pl_forecast": "P/L Forecast",
+      "next_month_projection": "Next Month Projection",
+      "trend_based": "Based on current trends (+5%)",
+      "config_tax_alerts": "Configure Tax Alerts",
+      "ledger_title": "General Ledger",
+      "ledger_subtitle": "Details of all financial transactions",
+      "all_categories": "All Categories",
+      "personnel": "Personnel",
+      "rent": "Rent",
+      "add_entry": "Add Entry",
+      "date_ref": "Date & Ref",
+      "type": "Type",
+      "amount": "Amount",
+      "status": "Status",
+      "credit": "Credit",
+      "debit": "Debit",
+      "recorded": "Recorded",
+      "load_more": "Load More Entries",
+      "end_history": "End of History",
+      "tax_settings": "Tax Settings",
+      "tax_settings_help": "These rates only affect preview calculations in the Accounting Suite.",
+      "tva_rate": "VAT Rate",
+      "est_professional_tax": "Est. Professional Tax",
+      "save_settings": "Save Settings"
+    },
+    "tabs": {
+      "dashboard": "Dashboard",
+      "fleet": "Fleet",
+      "sales": "Sales",
+      "analytics": "Analytics",
+      "expenses": "Expenses",
+      "gallery": "Gallery",
+      "settings": "Settings",
+      "planning": "Planning",
+      "inventory": "Inventory",
+      "crm": "CRM"
+    },
+    "planning": {
+      "title": "Fleet Planning",
+      "subtitle": "Panoramic view of bookings",
+      "vehicles": "Vehicles"
+    },
+    "inventory": {
+      "title": "Stock & Inventory Management",
+      "subtitle": "Maintenance and consumables",
+      "add_btn": "ADD ITEM",
+      "designation": "Designation",
+      "stock": "Stock",
+      "unit_price": "Unit Price",
+      "empty": "Inventory empty",
+      "items": "Items"
+    },
+    "crm": {
+      "title": "Customer Relationship Management (CRM)",
+      "search_placeholder": "Search for a client...",
+      "loyalty_points": "Loyalty Points",
+      "history": "History",
+      "blacklist": "Blacklisted",
+      "elite": "Elite",
+      "premium": "Premium",
+      "gold": "Gold",
+      "ban": "Blacklist",
+      "unban": "Remove from Blacklist",
+      "reservations": "Bookings"
+    },
+    "inspection": {
+      "title": "Vehicle Inspection",
+      "check_in": "Check-in (Departure)",
+      "check_out": "Check-out (Return)",
+      "photos": "Vehicle Photos",
+      "notes": "Notes & Observations",
+      "validate": "Validate Inspection",
+      "placeholder": "Report scratches, fuel level, etc..."
+    },
+    "charts": {
+      "flux": "Monthly Financial Flow",
+      "performance": "Fleet Performance",
+      "volume": "Booking Volume",
+      "repartition": "Fleet Distribution",
+      "health": "Business Health Score",
+      "profitability_cat": "Profitability by Category",
+      "cash_flow": "Cash Flow",
+      "rev_vs_exp": "Revenue vs Expenses"
+    },
+    "fleet": {
+      "add_car": "ADD VEHICLE",
+      "edit_car": "Edit Vehicle",
+      "car_brand": "Brand",
+      "car_model": "Model",
+      "price_day": "Price / Day",
+      "fuel": "Fuel",
+      "media": "Media (Photos)",
+      "video_link": "Video Link (YouTube/MP4)",
+      "insurance": "Insurance Expiry",
+      "tech_visit": "Tech Visit",
+      "vignette": "Vignette Expiry",
+      "last_oil": "Last Oil Change (KM)",
+      "next_oil": "Next Oil Change (KM)"
+    },
+    "expenses": {
+      "title": "Expense Management",
+      "add_btn": "REGISTER EXPENSE",
+      "total": "Total Expenses",
+      "count": "Total Operations",
+      "average": "Average / Expense",
+      "designation": "Expense Designation",
+      "category": "Category",
+      "amount": "Amount",
+      "vehicle": "Vehicle (Optional)"
+    },
+    "settings": {
+      "profile": "Agency Profile",
+      "logo": "Agency Logo",
+      "change_logo": "CHANGE LOGO",
+      "commercial_name": "Business Name",
+      "contact_email": "Contact Email",
+      "currency": "Currency",
+      "tax": "Tax Rate (%)",
+      "update_btn": "UPDATE SETTINGS"
+    },
+    "exports": {
+      "pdf": "EXPORT PDF",
+      "excel": "EXPORT EXCEL"
+    }
   },
   "footer": {
-    "about": "Leader in premium vehicle rental in Morocco.",
+    "about": "Leader in premium vehicle rental in Morocco. We redefine the mobility experience through our exclusive fleet and tailored service.",
+    "excellence": "Automotive excellence",
     "address": "Address",
     "phone": "Phone",
     "email": "Email",
-    "rights": "All rights reserved."
+    "rights": "All rights reserved.",
+    "made_with": "Made with passion in Morocco",
+    "follow_us": "Follow us :",
+    "payments": "Accepted payments :",
+    "newsletter": {
+      "title": "Exclusive Newsletter",
+      "desc": "Be the first to receive our special offers and news.",
+      "placeholder": "Your email",
+      "btn": "Subscribe",
+      "success": "Thanks for subscribing!",
+      "policy": "By subscribing, you accept our privacy policy."
+    },
+    "quick_links": {
+      "title": "Quick Navigation",
+      "fleet": "Premium Fleet",
+      "services": "VIP Services",
+      "reservation": "Express Reservation",
+      "offers": "Special Offers"
+    },
+    "services": {
+      "title": "Our Services",
+      "long_term": "Long-term rental",
+      "delivery": "Home delivery",
+      "chauffeur": "Service with driver",
+      "event": "Event package",
+      "shooting": "Rental for filming",
+      "loyalty": "Loyalty program"
+    }
   }
 }
