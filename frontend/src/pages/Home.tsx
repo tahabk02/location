@@ -118,11 +118,22 @@ export function HomePage() {
   };
 
   const [introProgress, setIntroProgress] = useState(0);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (showIntro && videoRef.current) {
+      videoRef.current.play().catch(err => {
+        console.log("Autoplay blocked, user interaction might be needed", err);
+      });
+    }
+  }, [showIntro]);
 
   const handleVideoProgress = (e: React.SyntheticEvent<HTMLVideoElement>) => {
     const video = e.currentTarget;
-    const progress = (video.currentTime / video.duration) * 100;
-    setIntroProgress(progress);
+    if (video.duration) {
+      const progress = (video.currentTime / video.duration) * 100;
+      setIntroProgress(progress);
+    }
   };
 
   const [notifications] = useState<Notification[]>([
@@ -169,19 +180,22 @@ export function HomePage() {
             initial={{ opacity: 1 }}
             exit={{ opacity: 0, scale: 1.1, filter: "blur(40px)" }}
             transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed inset-0 z-[200] bg-white flex items-center justify-center overflow-hidden"
+            className="fixed inset-0 z-[200] bg-black flex items-center justify-center overflow-hidden"
           >
             {/* Ambient background glow */}
-            <div className="absolute inset-0 z-0 bg-white">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,0,0,0.03)_0%,transparent_70%)] animate-pulse" />
+            <div className="absolute inset-0 z-0 bg-black">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,0,0,0.1)_0%,transparent_70%)] animate-pulse" />
               <video
+                ref={videoRef}
                 autoPlay
                 muted
                 playsInline
+                loop
                 preload="auto"
                 onEnded={handleSkipIntro}
                 onTimeUpdate={handleVideoProgress}
-                className="w-full h-full object-cover md:object-contain relative z-10 transition-transform duration-1000"
+                className="w-full h-full object-cover relative z-10"
+                style={{ pointerEvents: 'none' }} // Disable right click/interactions
               >
                 <source src="/intro.mp4" type="video/mp4" />
               </video>
