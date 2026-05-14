@@ -649,19 +649,19 @@ export const CarDetails: React.FC<CarDetailsProps> = ({
                   </p>
                 </div>
 
-                {/* Tabs Navigation - Fluid Horizontal Scroll */}
-                <div className="flex items-center overflow-x-auto scrollbar-hide gap-0 p-1.5 bg-gray-100 dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 whitespace-nowrap">
+                {/* Tabs Navigation - Guaranteed Single Row Horizontal Scroll */}
+                <div className="flex flex-nowrap items-center overflow-x-auto scrollbar-hide p-1.5 bg-gray-100 dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 min-h-[56px]">
                   {tabs.map((tab) => (
                     <button
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id)}
-                      className={`flex items-center gap-2 px-6 mx-1 py-3 rounded-xl text-sm sm:text-base font-black uppercase tracking-widest transition-all flex-shrink-0 ${
+                      className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-base font-black uppercase tracking-widest transition-all whitespace-nowrap flex-shrink-0 ${
                         activeTab === tab.id
                           ? "bg-white dark:bg-gray-700 text-blue-600 shadow-md scale-[1.02]"
                           : "text-gray-500 hover:text-gray-900 dark:hover:text-white"
                       }`}
                     >
-                      {tab.icon}
+                      <span className="flex-shrink-0">{tab.icon}</span>
                       <span>{tab.label}</span>
                     </button>
                   ))}
