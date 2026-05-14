@@ -38,9 +38,38 @@ export const createBooking = async (req, res) => {
       totalAmount,
       status: "confirmed",
       invoiceNumber: `INV-${Date.now()}`,
+      contractNumber: `CON-${Math.floor(1000 + Math.random() * 9000)}-${new Date().getFullYear()}`,
       createdAt: new Date(),
       options: options || {},
     };
+...
+export const signContract = async (req, res) => {
+  try {
+    const bookings = getCollection("bookings");
+    const { id } = req.params;
+    const { signature } = req.body; // base64 image
+    const agencyId = req.user.agencyId || "default";
+
+    const result = await bookings.updateOne(
+      { _id: new ObjectId(id), agencyId },
+      { 
+        $set: { 
+          signature, 
+          signedAt: new Date(),
+          isSigned: true 
+        } 
+      }
+    );
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+
+    res.json({ message: "Contrat signé avec succès" });
+  } catch (error) {
+    res.status(500).json({ message: "Erreur lors de la signature", error: error.message });
+  }
+};
 
     const result = await bookings.insertOne(booking);
     const insertedBooking = { _id: result.insertedId, ...booking };

@@ -162,6 +162,33 @@ export default function AdminDashboard() {
 
   const [showCarModal, setShowCarModal] = useState(false);
   const [showExpenseModal, setShowExpenseModal] = useState(false);
+  const [showSignaturePad, setShowSignaturePad] = useState(false);
+  const [showDamageMap, setShowDamageMap] = useState(false);
+  const [currentBookingForAction, setCurrentBookingForAction] = useState<any>(null);
+
+  const handleSignContract = async (signature: string) => {
+    if (!currentBookingForAction) return;
+    try {
+      await bookingService.sign(currentBookingForAction._id, signature);
+      setShowSignaturePad(false);
+      loadData();
+      alert("Contrat signé avec succès !");
+    } catch (err) {
+      alert("Erreur lors de la signature");
+    }
+  };
+
+  const handleSaveDamages = async (damages: any[]) => {
+    if (!currentBookingForAction) return;
+    try {
+      await bookingService.updateInspection(currentBookingForAction._id, { type: 'check-in', photos: [], notes: JSON.stringify(damages) });
+      setShowDamageMap(false);
+      loadData();
+      alert("État des lieux enregistré !");
+    } catch (err) {
+      alert("Erreur lors de l'enregistrement");
+    }
+  };
   const [showServiceModal, setShowServiceModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingCarId, setEditingCarId] = useState<string | null>(null);
