@@ -464,18 +464,18 @@ export const CarDetails: React.FC<CarDetailsProps> = ({
   return (
     <>
       <Header user={user} />
-      <div className="min-h-screen pt-20 bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      <div className="min-h-screen pt-24 pb-24 sm:pb-0 bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
         {/* Back Button - Mobile Optimized */}
         <button
           onClick={handleBack}
-          className="fixed top-20 sm:top-24 left-4 z-50 flex items-center gap-2 px-3 py-2 bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-lg font-semibold text-gray-800 dark:text-white shadow-xl border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:scale-105 active:scale-95 text-xs sm:text-sm"
+          className="fixed top-24 sm:top-28 left-4 z-50 flex items-center gap-2 px-3 py-2 bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-lg font-semibold text-gray-800 dark:text-white shadow-xl border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:scale-105 active:scale-95 text-xs sm:text-sm"
         >
           <ArrowLeft className="w-3.5 h-3.5 sm:w-4 h-4" />
           <span>Retour</span>
         </button>
 
         {/* Action Buttons - Mobile Optimized */}
-        <div className="fixed top-20 sm:top-24 right-4 z-50 flex gap-2">
+        <div className="fixed top-24 sm:top-28 right-4 z-50 flex gap-2">
           <button
             onClick={() => setIsFavorite(!isFavorite)}
             className={`p-2 rounded-lg backdrop-blur-xl transition-all duration-300 hover:scale-110 active:scale-90 ${

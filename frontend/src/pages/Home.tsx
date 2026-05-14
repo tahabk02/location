@@ -258,7 +258,7 @@ export function HomePage() {
 
         <motion.div
           style={{ y: headerY, opacity: headerOpacity }}
-          className="fixed top-0 left-0 right-0 z-50"
+          className="fixed top-0 left-0 right-0 z-[100]"
         >
           <Header
             onSearch={handleSearch}

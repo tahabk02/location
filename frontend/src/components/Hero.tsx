@@ -239,7 +239,7 @@ export const Hero: React.FC<HeroProps> = ({ onBook, onExplore, isMobile }) => {
     <section
       ref={heroRef}
       id="hero"
-      className={`relative h-[100dvh] lg:min-h-screen flex items-center justify-center overflow-hidden transition-colors duration-1000 ${
+      className={`relative min-h-screen lg:h-screen flex items-center justify-center overflow-hidden transition-colors duration-1000 ${
         theme === 'light' ? 'bg-white' : 'bg-gradient-to-br from-gray-950 via-black to-gray-950'
       }`}
     >
@@ -314,7 +314,7 @@ export const Hero: React.FC<HeroProps> = ({ onBook, onExplore, isMobile }) => {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-12 lg:py-32 relative z-20">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12 lg:py-32 relative z-20">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-20 items-center">
           <div className="space-y-4 sm:space-y-10 order-2 lg:order-1">
             <div className="flex flex-row items-center justify-between gap-4 mb-2 sm:mb-8">
@@ -346,7 +346,7 @@ export const Hero: React.FC<HeroProps> = ({ onBook, onExplore, isMobile }) => {
                     <span className={`${theme === 'light' ? 'text-blue-600' : 'text-red-500'} text-[8px] sm:text-xs font-black tracking-[0.2em] uppercase animate-pulse`}>Premium Ultra Pro</span>
                   </div>
                 </div>
-                <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold leading-[1.1] lg:leading-[0.95] mb-2 sm:mb-6">
+                <h1 className="text-2xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold leading-[1.1] lg:leading-[0.95] mb-2 sm:mb-6">
                   <span className="bg-gradient-to-r from-blue-600 via-indigo-500 to-violet-600 bg-clip-text text-transparent uppercase" style={{ backgroundSize: "200% auto", animation: "hologram 3s ease-in-out infinite" }}>
                     {t("hero.title").includes(",") ? t("hero.title").split(",")[0] : t("hero.title")}
                   </span>
