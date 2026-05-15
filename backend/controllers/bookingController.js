@@ -150,7 +150,7 @@ export const updateBookingStatus = async (req, res) => {
   }
 };
 
-export const updateInspection = async (req, res) => {
+export const updateBookingInspection = async (req, res) => {
   try {
     const bookings = getCollection("bookings");
     const { id } = req.params;
