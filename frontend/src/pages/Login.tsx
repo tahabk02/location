@@ -28,18 +28,17 @@ export function LoginPage() {
 const handleForgotPassword = async (e: React.FormEvent) => {
   e.preventDefault();
   setForgotStatus({ type: "", message: "" });
+  setIsSubmitting(true);
   try {
     const res = await authService.forgotPassword(forgotEmail.trim());
     setForgotStatus({ type: "success", message: res.message });
     setResetStep(2);
   } catch (err: any) {
     setForgotStatus({ type: "error", message: err.message });
+  } finally {
+    setIsSubmitting(false);
   }
 };
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
