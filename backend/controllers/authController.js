@@ -64,8 +64,12 @@ export const forgotPassword = async (req, res) => {
     const users = getCollection("users");
     const user = await users.findOne({ email });
     
+    // Pour la sécurité (prévention de l'énumération d'emails),
+    // on renvoie toujours un message de succès même si l'utilisateur n'existe pas.
     if (!user) {
-      return res.status(404).json({ message: "Utilisateur non trouvé avec cet email" });
+      return res.json({ 
+        message: "Si un compte est associé à cet email, un code de réinitialisation sera envoyé."
+      });
     }
 
     // Générer un code de réinitialisation à 6 chiffres
@@ -85,15 +89,17 @@ export const forgotPassword = async (req, res) => {
     const emailSent = await sendResetEmail(email, resetCode);
 
     if (!emailSent) {
-      return res.status(500).json({ message: "Erreur lors de l'envoi de l'email. Veuillez réessayer plus tard." });
+      // On ne renvoie pas d'erreur 500 ici pour rester discret,
+      // mais on log l'erreur côté serveur.
+      console.error(`Failed to send reset email to ${email}`);
     }
 
     res.json({ 
-      message: "Un code de réinitialisation a été envoyé à votre adresse email."
+      message: "Si un compte est associé à cet email, un code de réinitialisation sera envoyé."
     });
   } catch (error) {
     console.error("Forgot password error details:", error);
-    res.status(500).json({ message: `Erreur: ${error.message}` });
+    res.status(500).json({ message: "Une erreur est survenue. Veuillez réessayer plus tard." });
   }
 };
 

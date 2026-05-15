@@ -43,6 +43,14 @@ const limiter = rateLimit({
 });
 app.use("/api", limiter);
 
+// Stricter Rate Limiting for Auth
+const authLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 5, // limit each IP to 5 requests per hour
+  message: "Trop de tentatives. Veuillez réessayer dans une heure."
+});
+app.use("/api/auth/forgot-password", authLimiter);
+
 // Middleware
 app.use(cors({ origin: "*" }));
 app.use(express.json({ limit: "10mb" })); // Reduced limit for better security, adjust if necessary
