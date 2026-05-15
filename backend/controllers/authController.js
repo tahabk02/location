@@ -77,7 +77,7 @@ export const forgotPassword = async (req, res) => {
     console.log(`[SIMULATION EMAIL] Code de réinitialisation pour ${email} : ${resetCode}`);
     
     res.json({ 
-      message: "Un code de réinitialisation a été envoyé à votre email (Simulé dans la console)",
+      message: `[DEMO] Un code de réinitialisation a été généré : ${resetCode} (Dans une app réelle, il serait envoyé par email)`,
       // On renvoie le code pour faciliter le test en démo si besoin, mais à retirer en prod
       debugCode: resetCode 
     });
