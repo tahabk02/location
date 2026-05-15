@@ -1,4 +1,4 @@
-import { getCollection } from "../config/db.js";
+import { getCollection, connectDB } from "../config/db.js";
 import { ObjectId } from "mongodb";
 
 export const login = async (req, res) => {
