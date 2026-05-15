@@ -25,17 +25,17 @@ export function LoginPage() {
   const [resetCode, setResetCode] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [forgotStatus, setForgotStatus] = useState({ type: "", message: "" });
-
-  const handleForgotPassword = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setForgotStatus({ type: "", message: "" });
-    setIsSubmitting(true);
-    try {
-      const res = await authService.forgotPassword(forgotEmail);
-      setForgotStatus({ type: "success", message: res.message });
-      setResetStep(2);
-    } catch (err: any) {
-      setForgotStatus({ type: "error", message: err.message });
+const handleForgotPassword = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setForgotStatus({ type: "", message: "" });
+  try {
+    const res = await authService.forgotPassword(forgotEmail.trim());
+    setForgotStatus({ type: "success", message: res.message });
+    setResetStep(2);
+  } catch (err: any) {
+    setForgotStatus({ type: "error", message: err.message });
+  }
+};
     } finally {
       setIsSubmitting(false);
     }
@@ -46,7 +46,7 @@ export function LoginPage() {
     setForgotStatus({ type: "", message: "" });
     setIsSubmitting(true);
     try {
-      await authService.resetPassword({ email: forgotEmail, code: resetCode, newPassword });
+      await authService.resetPassword({ email: forgotEmail.trim(), code: resetCode, newPassword });
       setForgotStatus({ type: "success", message: "Mot de passe réinitialisé ! Connectez-vous." });
       setTimeout(() => {
         setShowForgotModal(false);

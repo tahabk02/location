@@ -2,6 +2,8 @@ import { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   ArrowLeft,
+  ArrowRight,
+  Lock,
   Star,
   Fuel,
   Users,
@@ -102,7 +104,14 @@ export const CarDetails: React.FC<CarDetailsProps> = ({
   const [activeTab, setActiveTab] = useState("overview");
   const [isFavorite, setIsFavorite] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [bookingStep, setBookingStep] = useState(1);
+  const [paymentData, setPaymentData] = useState({
+    cardName: "",
+    cardNumber: "",
+    expiry: "",
+    cvv: "",
+  });
   const [selectedLocation, setSelectedLocation] = useState(
     "Casablanca - Ain Diab",
   );
@@ -254,10 +263,14 @@ export const CarDetails: React.FC<CarDetailsProps> = ({
   };
 
   const handleNextStep = async () => {
-    if (bookingStep < 4) {
+    if (bookingStep < 5) {
       setBookingStep(bookingStep + 1);
     } else {
+      setIsSubmitting(true);
       try {
+        // Simulation d'un délai de traitement bancaire (CMI/Maroc)
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+
         const bookingData = {
           carId: car._id,
           startDate: bookingDates.start,
@@ -270,17 +283,38 @@ export const CarDetails: React.FC<CarDetailsProps> = ({
             insurance: insuranceOption,
             location: selectedLocation,
           },
+          paymentMethod: "card",
+          paymentStatus: "paid",
         };
         await bookingService.create(bookingData);
         alert(
-          "Réservation confirmée ! Vous pouvez voir votre reçu dans votre tableau de bord.",
+          "Paiement réussi ! Votre réservation est confirmée. Un reçu a été envoyé à votre email.",
         );
         setShowBookingModal(false);
         navigate("/client");
       } catch (error: any) {
-        alert("Erreur lors de la réservation: " + error.message);
+        alert("Erreur lors du paiement: " + error.message);
+      } finally {
+        setIsSubmitting(false);
       }
     }
+  };
+
+  const formatCardNumber = (value: string) => {
+    const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
+    const parts = [];
+    for (let i = 0; i < v.length; i += 4) {
+      parts.push(v.substring(i, i + 4));
+    }
+    return parts.length > 0 ? parts.join(" ") : v;
+  };
+
+  const formatExpiry = (value: string) => {
+    const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
+    if (v.length >= 2) {
+      return v.substring(0, 2) + "/" + v.substring(2, 4);
+    }
+    return v;
   };
 
   const handlePrevImage = () => {
@@ -1128,12 +1162,126 @@ export const CarDetails: React.FC<CarDetailsProps> = ({
                     </button>
                     <button
                       onClick={handleNextStep}
-                      className="flex-1 py-2.5 rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold hover:shadow-xl transition-all text-sm flex items-center justify-center gap-1.5"
+                      className="flex-1 py-2.5 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-bold hover:shadow-xl transition-all text-sm flex items-center justify-center gap-1.5"
                     >
-                      <CreditCard className="w-4 h-4" />
-                      Payer et confirmer
+                      Procéder au paiement
+                      <ArrowRight className="w-4 h-4" />
                     </button>
                   </div>
+                </div>
+              )}
+
+              {/* Step 5: Secure Payment */}
+              {bookingStep === 5 && (
+                <div className="space-y-4">
+                  <div className="text-center">
+                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 mb-2">
+                      <ShieldCheck className="w-6 h-6" />
+                    </div>
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
+                      Paiement Sécurisé
+                    </h2>
+                    <p className="text-gray-500 dark:text-gray-400 text-xs">
+                      Transaction sécurisée par cryptage SSL 256-bit
+                    </p>
+                  </div>
+
+                  <div className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-2xl border border-gray-200 dark:border-gray-700 space-y-3">
+                    <div className="flex justify-between items-center mb-2">
+                      <div className="flex gap-2">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-4 opacity-70" />
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-4 opacity-70" />
+                      </div>
+                      <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Cartes Marocaines Acceptées</span>
+                    </div>
+
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1 mb-1">Nom sur la carte</label>
+                        <input 
+                          type="text"
+                          value={paymentData.cardName}
+                          onChange={(e) => setPaymentData({...paymentData, cardName: e.target.value})}
+                          placeholder="M. AHMED ALAMI"
+                          className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all dark:text-white"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1 mb-1">Numéro de carte</label>
+                        <div className="relative">
+                          <CreditCard className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                          <input 
+                            type="text"
+                            value={paymentData.cardNumber}
+                            onChange={(e) => setPaymentData({...paymentData, cardNumber: formatCardNumber(e.target.value)})}
+                            placeholder="0000 0000 0000 0000"
+                            maxLength={19}
+                            className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl py-3 pl-12 pr-4 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all dark:text-white font-mono"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1 mb-1">Expiration</label>
+                          <input 
+                            type="text"
+                            value={paymentData.expiry}
+                            onChange={(e) => setPaymentData({...paymentData, expiry: formatExpiry(e.target.value)})}
+                            placeholder="MM/YY"
+                            maxLength={5}
+                            className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all dark:text-white text-center"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1 mb-1">CVV</label>
+                          <div className="relative">
+                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                            <input 
+                              type="password"
+                              value={paymentData.cvv}
+                              onChange={(e) => setPaymentData({...paymentData, cvv: e.target.value.replace(/\D/g, '')})}
+                              placeholder="123"
+                              maxLength={3}
+                              className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl py-3 pl-12 pr-4 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all dark:text-white text-center"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setBookingStep(4)}
+                      disabled={isSubmitting}
+                      className="flex-1 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-bold hover:bg-gray-200 transition-all text-sm disabled:opacity-50"
+                    >
+                      Retour
+                    </button>
+                    <button
+                      onClick={handleNextStep}
+                      disabled={isSubmitting || !paymentData.cardNumber || !paymentData.expiry || !paymentData.cvv}
+                      className="flex-[2] py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-black shadow-lg shadow-emerald-500/20 hover:scale-[1.02] active:scale-95 transition-all text-sm flex items-center justify-center gap-2 disabled:opacity-50"
+                    >
+                      {isSubmitting ? (
+                        <div className="flex items-center gap-2">
+                          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                          Traitement...
+                        </div>
+                      ) : (
+                        <>
+                          <Lock className="w-4 h-4" />
+                          Payer {calculateTotal() + calculateInsurance() + (selectedLocation.includes("domicile") ? 50 : 0)} DH
+                        </>
+                      )}
+                    </button>
+                  </div>
+
+                  <p className="text-[10px] text-center text-gray-400 font-medium">
+                    En cliquant sur payer, vous acceptez nos conditions générales de vente et d'utilisation.
+                  </p>
                 </div>
               )}
             </div>

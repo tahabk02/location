@@ -50,8 +50,13 @@ export const register = async (req, res) => {
 };
 
 export const forgotPassword = async (req, res) => {
-  const { email } = req.body;
   try {
+    const { email: rawEmail } = req.body;
+    if (!rawEmail) {
+      return res.status(400).json({ message: "L'email est requis" });
+    }
+    const email = rawEmail.trim().toLowerCase();
+
     const users = getCollection("users");
     const user = await users.findOne({ email });
     if (!user) {
@@ -76,13 +81,19 @@ export const forgotPassword = async (req, res) => {
       debugCode: resetCode 
     });
   } catch (error) {
+    console.error("Forgot password error:", error);
     res.status(500).json({ message: "Erreur lors de l'oubli du mot de passe", error: error.message });
   }
 };
 
 export const resetPassword = async (req, res) => {
-  const { email, code, newPassword } = req.body;
   try {
+    const { email: rawEmail, code, newPassword } = req.body;
+    if (!rawEmail || !code || !newPassword) {
+      return res.status(400).json({ message: "Tous les champs sont requis" });
+    }
+    const email = rawEmail.trim().toLowerCase();
+
     const users = getCollection("users");
     const user = await users.findOne({ 
       email, 
@@ -104,6 +115,7 @@ export const resetPassword = async (req, res) => {
 
     res.json({ message: "Mot de passe réinitialisé avec succès" });
   } catch (error) {
+    console.error("Reset password error:", error);
     res.status(500).json({ message: "Erreur lors de la réinitialisation", error: error.message });
   }
 };

@@ -21,7 +21,16 @@ export const createBooking = async (req, res) => {
     const end = new Date(endDate);
     const days =
       Math.ceil((end.getTime() - start.getTime()) / (1000 * 3600 * 24)) || 1;
-    const totalAmount = days * car.pricePerDay;
+    
+    let baseAmount = days * car.pricePerDay;
+    let insuranceAmount = 0;
+    
+    if (options?.insurance === "basic") insuranceAmount = baseAmount * 0.1;
+    else if (options?.insurance === "premium") insuranceAmount = baseAmount * 0.15;
+    else if (options?.insurance === "ultimate") insuranceAmount = baseAmount * 0.2;
+
+    const deliveryFee = (options?.location && options.location.includes("domicile")) ? 50 : 0;
+    const finalTotalAmount = baseAmount + insuranceAmount + deliveryFee;
 
     const booking = {
       agencyId,
@@ -35,7 +44,9 @@ export const createBooking = async (req, res) => {
       startDate,
       endDate,
       location: bookingLocation,
-      totalAmount,
+      totalAmount: finalTotalAmount,
+      paymentMethod: req.body.paymentMethod || "manual",
+      paymentStatus: req.body.paymentStatus || "pending",
       status: "confirmed",
       invoiceNumber: `INV-${Date.now()}`,
       contractNumber: `CON-${Math.floor(1000 + Math.random() * 9000)}-${new Date().getFullYear()}`,
