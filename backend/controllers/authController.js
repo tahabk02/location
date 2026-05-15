@@ -1,7 +1,11 @@
-import { getCollection, connectDB } from "../config/db.js";
+import { getCollection } from "../config/db.js";
 import { ObjectId } from "mongodb";
+import { sendResetEmail } from "../services/notificationService.js";
+
+// ... rest of imports if any ...
 
 export const login = async (req, res) => {
+
   const { email, password } = req.body;
   try {
     const users = getCollection("users");
@@ -57,15 +61,14 @@ export const forgotPassword = async (req, res) => {
     }
     const email = rawEmail.trim().toLowerCase();
 
-    const db = await connectDB();
-    const users = db.collection("users");
+    const users = getCollection("users");
     const user = await users.findOne({ email });
     
     if (!user) {
       return res.status(404).json({ message: "Utilisateur non trouvé avec cet email" });
     }
 
-    // Générer un code de réinitialisation simple à 6 chiffres pour la démo
+    // Générer un code de réinitialisation à 6 chiffres
     const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
     const resetExpires = new Date(Date.now() + 3600000); // 1 heure
 
@@ -78,10 +81,15 @@ export const forgotPassword = async (req, res) => {
       throw new Error("Impossible de mettre à jour l'utilisateur");
     }
 
-    // Dans une app réelle, on enverrait un email ici. Pour la démo, on affiche le code.
+    // Envoi de l'email
+    const emailSent = await sendResetEmail(email, resetCode);
+
+    if (!emailSent) {
+      return res.status(500).json({ message: "Erreur lors de l'envoi de l'email. Veuillez réessayer plus tard." });
+    }
+
     res.json({ 
-      message: `[DEMO] Code de réinitialisation généré : ${resetCode}`,
-      debugCode: resetCode 
+      message: "Un code de réinitialisation a été envoyé à votre adresse email."
     });
   } catch (error) {
     console.error("Forgot password error details:", error);
