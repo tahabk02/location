@@ -110,10 +110,8 @@ export const CarDetails: React.FC<CarDetailsProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [bookingStep, setBookingStep] = useState(1);
   const [paymentData, setPaymentData] = useState({
+    method: 'agency', // Default to agency payment
     cardName: "",
-    cardNumber: "",
-    expiry: "",
-    cvv: "",
   });
   const [selectedLocation, setSelectedLocation] = useState(
     "Casablanca - Ain Diab",
@@ -269,8 +267,6 @@ export const CarDetails: React.FC<CarDetailsProps> = ({
     if (bookingStep < 5) {
       setBookingStep(bookingStep + 1);
     } else {
-      if (!stripe || !elements) return;
-
       setIsSubmitting(true);
       try {
         const totalAmount =
@@ -278,7 +274,7 @@ export const CarDetails: React.FC<CarDetailsProps> = ({
           calculateInsurance() +
           (selectedLocation.includes("domicile") ? 50 : 0);
 
-        // 1. Create a pending booking
+        // 1. Create booking data
         const bookingData = {
           carId: car._id,
           startDate: bookingDates.start,
@@ -288,41 +284,45 @@ export const CarDetails: React.FC<CarDetailsProps> = ({
             insurance: insuranceOption,
             location: selectedLocation,
           },
-          paymentMethod: "card",
-          paymentStatus: "pending",
+          paymentMethod: paymentData.method,
+          paymentStatus: paymentData.method === "card" ? "pending" : "to_be_paid",
         };
-        const booking = await bookingService.create(bookingData);
 
-        // 2. Create Payment Intent on backend
-        const { clientSecret } = await paymentService.createIntent(totalAmount, booking._id);
+        // 2. Handle Stripe Payment if selected
+        if (paymentData.method === "card") {
+          if (!stripe || !elements) throw new Error("Stripe n'est pas configuré");
+          
+          const booking = await bookingService.create(bookingData);
+          const { clientSecret } = await paymentService.createIntent(totalAmount, booking._id);
 
-        // 3. Confirm payment with Stripe
-        const cardElement = elements.getElement(CardElement);
-        if (!cardElement) throw new Error("Erreur de configuration de la carte");
+          const cardElement = elements.getElement(CardElement);
+          if (!cardElement) throw new Error("Erreur de configuration de la carte");
 
-        const result = await stripe.confirmCardPayment(clientSecret, {
-          payment_method: {
-            card: cardElement,
-            billing_details: {
-              name: paymentData.cardName,
-              email: user?.email,
+          const result = await stripe.confirmCardPayment(clientSecret, {
+            payment_method: {
+              card: cardElement,
+              billing_details: {
+                name: paymentData.cardName,
+                email: user?.email,
+              },
             },
-          },
-        });
+          });
 
-        if (result.error) {
-          throw new Error(result.error.message);
+          if (result.error) throw new Error(result.error.message);
+
+          if (result.paymentIntent.status === "succeeded") {
+            alert("Paiement réussi ! Votre réservation est confirmée.");
+          }
+        } else {
+          // Agency Payment
+          await bookingService.create(bookingData);
+          alert("Réservation confirmée ! Vous pouvez régler à l'agence lors de la récupération.");
         }
 
-        if (result.paymentIntent.status === "succeeded") {
-          alert(
-            "Paiement réussi ! Votre réservation est confirmée. Un reçu a été envoyé à votre email.",
-          );
-          setShowBookingModal(false);
-          navigate("/client");
-        }
+        setShowBookingModal(false);
+        navigate("/client");
       } catch (error: any) {
-        alert("Erreur lors du paiement: " + error.message);
+        alert("Erreur: " + error.message);
       } finally {
         setIsSubmitting(false);
       }
@@ -1200,7 +1200,7 @@ export const CarDetails: React.FC<CarDetailsProps> = ({
                 </div>
               )}
 
-              {/* Step 5: Secure Payment */}
+              {/* Step 5: Payment */}
               {bookingStep === 5 && (
                 <div className="space-y-4">
                   <div className="text-center">
@@ -1208,56 +1208,87 @@ export const CarDetails: React.FC<CarDetailsProps> = ({
                       <ShieldCheck className="w-6 h-6" />
                     </div>
                     <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
-                      Paiement Sécurisé
+                      Mode de Paiement
                     </h2>
                     <p className="text-gray-500 dark:text-gray-400 text-xs">
-                      Transaction sécurisée par cryptage SSL 256-bit
+                      Choisissez comment vous souhaitez régler votre réservation
                     </p>
                   </div>
 
-                  <div className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-2xl border border-gray-200 dark:border-gray-700 space-y-3">
-                    <div className="flex justify-between items-center mb-2">
-                      <div className="flex gap-2">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-4 opacity-70" />
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-4 opacity-70" />
+                  <div className="space-y-3">
+                    {/* Agency Payment Option */}
+                    <button
+                      onClick={() => setPaymentData({ ...paymentData, method: 'agency' })}
+                      className={`w-full p-4 rounded-2xl border-2 transition-all text-left flex items-center gap-4 ${
+                        paymentData.method === 'agency'
+                          ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'
+                          : 'border-gray-200 dark:border-gray-800 hover:border-gray-300'
+                      }`}
+                    >
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                        paymentData.method === 'agency' ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-400'
+                      }`}>
+                        <Home className="w-5 h-5" />
                       </div>
-                      <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Cartes Marocaines Acceptées</span>
-                    </div>
+                      <div className="flex-1">
+                        <p className="font-bold text-sm dark:text-white">Paiement à l'agence (Cash)</p>
+                        <p className="text-[10px] text-gray-500 font-medium tracking-tight">Réservez maintenant, payez lors de la récupération</p>
+                      </div>
+                      {paymentData.method === 'agency' && <CheckCircle className="w-5 h-5 text-blue-600" />}
+                    </button>
 
-                    <div className="space-y-3">
-                      <div>
-                        <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1 mb-1">Nom sur la carte</label>
-                        <input 
-                          type="text"
-                          value={paymentData.cardName}
-                          onChange={(e) => setPaymentData({...paymentData, cardName: e.target.value})}
-                          placeholder="M. AHMED ALAMI"
-                          className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all dark:text-white"
-                        />
-                      </div>
+                    {/* Stripe Card Option (Only if keys available) */}
+                    {stripePromise && (
+                      <div className={`p-4 rounded-2xl border-2 transition-all ${
+                        paymentData.method === 'card'
+                          ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'
+                          : 'border-gray-200 dark:border-gray-800'
+                      }`}>
+                        <button
+                          onClick={() => setPaymentData({ ...paymentData, method: 'card' })}
+                          className="w-full text-left flex items-center gap-4 mb-3"
+                        >
+                          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                            paymentData.method === 'card' ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-400'
+                          }`}>
+                            <CreditCard className="w-5 h-5" />
+                          </div>
+                          <div className="flex-1">
+                            <p className="font-bold text-sm dark:text-white">Carte Bancaire (Visa/Mastercard)</p>
+                            <p className="text-[10px] text-gray-500 font-medium tracking-tight">Paiement en ligne sécurisé via Stripe</p>
+                          </div>
+                          {paymentData.method === 'card' && <CheckCircle className="w-5 h-5 text-blue-600" />}
+                        </button>
 
-                      <div>
-                        <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1 mb-1">Détails de la carte</label>
-                        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl py-4 px-4">
-                          <CardElement
-                            options={{
-                              style: {
-                                base: {
-                                  fontSize: '16px',
-                                  color: '#fff',
-                                  '::placeholder': {
-                                    color: '#9ca3af',
-                                  },
-                                },
-                                invalid: {
-                                  color: '#ef4444',
-                                },
-                              },
-                            }}
-                          />
-                        </div>
+                        {paymentData.method === 'card' && (
+                          <div className="space-y-3 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                            <div>
+                              <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1 mb-1">Nom sur la carte</label>
+                              <input 
+                                type="text"
+                                value={paymentData.cardName}
+                                onChange={(e) => setPaymentData({...paymentData, cardName: e.target.value})}
+                                placeholder="M. AHMED ALAMI"
+                                className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all dark:text-white"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1 mb-1">Détails de la carte</label>
+                              <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl py-4 px-4">
+                                <CardElement
+                                  options={{
+                                    style: {
+                                      base: { fontSize: '16px', color: '#fff', '::placeholder': { color: '#9ca3af' } },
+                                      invalid: { color: '#ef4444' }
+                                    }
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        )}
                       </div>
-                    </div>
+                    )}
                   </div>
 
                   <div className="flex gap-2">
@@ -1270,7 +1301,7 @@ export const CarDetails: React.FC<CarDetailsProps> = ({
                     </button>
                     <button
                       onClick={handleNextStep}
-                      disabled={isSubmitting || !paymentData.cardName}
+                      disabled={isSubmitting || (paymentData.method === 'card' && !paymentData.cardName) || !paymentData.method}
                       className="flex-[2] py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-black shadow-lg shadow-emerald-500/20 hover:scale-[1.02] active:scale-95 transition-all text-sm flex items-center justify-center gap-2 disabled:opacity-50"
                     >
                       {isSubmitting ? (
@@ -1280,16 +1311,12 @@ export const CarDetails: React.FC<CarDetailsProps> = ({
                         </div>
                       ) : (
                         <>
-                          <Lock className="w-4 h-4" />
-                          Payer {calculateTotal() + calculateInsurance() + (selectedLocation.includes("domicile") ? 50 : 0)} DH
+                          {paymentData.method === 'card' ? <Lock className="w-4 h-4" /> : <CheckCircle className="w-4 h-4" />}
+                          {paymentData.method === 'card' ? 'Payer' : 'Confirmer'} {calculateTotal() + calculateInsurance() + (selectedLocation.includes("domicile") ? 50 : 0)} DH
                         </>
                       )}
                     </button>
                   </div>
-
-                  <p className="text-[10px] text-center text-gray-400 font-medium">
-                    En cliquant sur payer, vous acceptez nos conditions générales de vente et d'utilisation.
-                  </p>
                 </div>
               )}
             </div>
