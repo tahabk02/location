@@ -38,7 +38,6 @@ export const register = async (req, res) => {
       createdAt: new Date()
     });
     console.log("User registered successfully:", email);
-    res.json({ message: "User registered successfully:", email });
     res
       .status(201)
       .json({ id: result.insertedId.toString(), name, email, role, agencyId });
