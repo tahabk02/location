@@ -4,6 +4,10 @@ import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { lazy, Suspense } from "react";
 import { FloatingWhatsApp } from "./components/FloatingWhatsApp";
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
 // Lazy loading components
 const HomePage = lazy(() => import("./pages/Home").then(m => ({ default: m.HomePage })));
@@ -47,46 +51,48 @@ function App() {
       <LanguageProvider>
         <AuthProvider>
           <ThemeProvider>
-            <div className="relative">
-              <Suspense fallback={<PageLoader />}>
-                <Routes>
-                  <Route path="/" element={<HomePage />} />
-                  <Route path="/login" element={<LoginPage />} />
-                  <Route path="/cars" element={<CarCatalog />} />
-                  <Route path="/car/:id" element={<CarDetails />} />
-                  
-                  <Route 
-                    path="/admin" 
-                    element={
-                      <ProtectedRoute role="admin">
-                        <AdminDashboard />
-                      </ProtectedRoute>
-                    } 
-                  />
+            <Elements stripe={stripePromise}>
+              <div className="relative">
+                <Suspense fallback={<PageLoader />}>
+                  <Routes>
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/cars" element={<CarCatalog />} />
+                    <Route path="/car/:id" element={<CarDetails />} />
+                    
+                    <Route 
+                      path="/admin" 
+                      element={
+                        <ProtectedRoute role="admin">
+                          <AdminDashboard />
+                        </ProtectedRoute>
+                      } 
+                    />
 
-                  <Route 
-                    path="/superadmin" 
-                    element={
-                      <ProtectedRoute role="superadmin">
-                        <SuperAdminDashboard />
-                      </ProtectedRoute>
-                    } 
-                  />
+                    <Route 
+                      path="/superadmin" 
+                      element={
+                        <ProtectedRoute role="superadmin">
+                          <SuperAdminDashboard />
+                        </ProtectedRoute>
+                      } 
+                    />
 
-                  <Route 
-                    path="/client" 
-                    element={
-                      <ProtectedRoute role="client">
-                        <ClientDashboard />
-                      </ProtectedRoute>
-                    } 
-                  />
+                    <Route 
+                      path="/client" 
+                      element={
+                        <ProtectedRoute role="client">
+                          <ClientDashboard />
+                        </ProtectedRoute>
+                      } 
+                    />
 
-                  <Route path="*" element={<Navigate to="/" replace />} />
-                </Routes>
-              </Suspense>
-              <FloatingWhatsApp />
-            </div>
+                    <Route path="*" element={<Navigate to="/" replace />} />
+                  </Routes>
+                </Suspense>
+                <FloatingWhatsApp />
+              </div>
+            </Elements>
           </ThemeProvider>
         </AuthProvider>
       </LanguageProvider>

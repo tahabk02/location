@@ -74,8 +74,9 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { Header } from "./Header";
-import { getCars, bookingService } from "../services/api";
+import { getCars, bookingService, paymentService } from "../services/api";
 import { motion, AnimatePresence } from "framer-motion";
+import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
 
 interface CarDetailsProps {
   carId?: string | null;
@@ -87,6 +88,8 @@ export const CarDetails: React.FC<CarDetailsProps> = ({
   onBack,
 }) => {
   const navigate = useNavigate();
+  const stripe = useStripe();
+  const elements = useElements();
   const { id: urlCarId } = useParams<{ id: string }>();
   const id = propCarId || urlCarId;
 
@@ -266,32 +269,58 @@ export const CarDetails: React.FC<CarDetailsProps> = ({
     if (bookingStep < 5) {
       setBookingStep(bookingStep + 1);
     } else {
+      if (!stripe || !elements) return;
+
       setIsSubmitting(true);
       try {
-        // Simulation d'un délai de traitement bancaire (CMI/Maroc)
-        await new Promise((resolve) => setTimeout(resolve, 2000));
+        const totalAmount =
+          calculateTotal() +
+          calculateInsurance() +
+          (selectedLocation.includes("domicile") ? 50 : 0);
 
+        // 1. Create a pending booking
         const bookingData = {
           carId: car._id,
           startDate: bookingDates.start,
           endDate: bookingDates.end,
-          totalAmount:
-            calculateTotal() +
-            calculateInsurance() +
-            (selectedLocation.includes("domicile") ? 50 : 0),
+          totalAmount,
           options: {
             insurance: insuranceOption,
             location: selectedLocation,
           },
           paymentMethod: "card",
-          paymentStatus: "paid",
+          paymentStatus: "pending",
         };
-        await bookingService.create(bookingData);
-        alert(
-          "Paiement réussi ! Votre réservation est confirmée. Un reçu a été envoyé à votre email.",
-        );
-        setShowBookingModal(false);
-        navigate("/client");
+        const booking = await bookingService.create(bookingData);
+
+        // 2. Create Payment Intent on backend
+        const { clientSecret } = await paymentService.createIntent(totalAmount, booking._id);
+
+        // 3. Confirm payment with Stripe
+        const cardElement = elements.getElement(CardElement);
+        if (!cardElement) throw new Error("Erreur de configuration de la carte");
+
+        const result = await stripe.confirmCardPayment(clientSecret, {
+          payment_method: {
+            card: cardElement,
+            billing_details: {
+              name: paymentData.cardName,
+              email: user?.email,
+            },
+          },
+        });
+
+        if (result.error) {
+          throw new Error(result.error.message);
+        }
+
+        if (result.paymentIntent.status === "succeeded") {
+          alert(
+            "Paiement réussi ! Votre réservation est confirmée. Un reçu a été envoyé à votre email.",
+          );
+          setShowBookingModal(false);
+          navigate("/client");
+        }
       } catch (error: any) {
         alert("Erreur lors du paiement: " + error.message);
       } finally {
@@ -1208,45 +1237,24 @@ export const CarDetails: React.FC<CarDetailsProps> = ({
                       </div>
 
                       <div>
-                        <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1 mb-1">Numéro de carte</label>
-                        <div className="relative">
-                          <CreditCard className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                          <input 
-                            type="text"
-                            value={paymentData.cardNumber}
-                            onChange={(e) => setPaymentData({...paymentData, cardNumber: formatCardNumber(e.target.value)})}
-                            placeholder="0000 0000 0000 0000"
-                            maxLength={19}
-                            className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl py-3 pl-12 pr-4 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all dark:text-white font-mono"
+                        <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1 mb-1">Détails de la carte</label>
+                        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl py-4 px-4">
+                          <CardElement
+                            options={{
+                              style: {
+                                base: {
+                                  fontSize: '16px',
+                                  color: '#fff',
+                                  '::placeholder': {
+                                    color: '#9ca3af',
+                                  },
+                                },
+                                invalid: {
+                                  color: '#ef4444',
+                                },
+                              },
+                            }}
                           />
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1 mb-1">Expiration</label>
-                          <input 
-                            type="text"
-                            value={paymentData.expiry}
-                            onChange={(e) => setPaymentData({...paymentData, expiry: formatExpiry(e.target.value)})}
-                            placeholder="MM/YY"
-                            maxLength={5}
-                            className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all dark:text-white text-center"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1 mb-1">CVV</label>
-                          <div className="relative">
-                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                            <input 
-                              type="password"
-                              value={paymentData.cvv}
-                              onChange={(e) => setPaymentData({...paymentData, cvv: e.target.value.replace(/\D/g, '')})}
-                              placeholder="123"
-                              maxLength={3}
-                              className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl py-3 pl-12 pr-4 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all dark:text-white text-center"
-                            />
-                          </div>
                         </div>
                       </div>
                     </div>
@@ -1262,7 +1270,7 @@ export const CarDetails: React.FC<CarDetailsProps> = ({
                     </button>
                     <button
                       onClick={handleNextStep}
-                      disabled={isSubmitting || !paymentData.cardNumber || !paymentData.expiry || !paymentData.cvv}
+                      disabled={isSubmitting || !paymentData.cardName}
                       className="flex-[2] py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-black shadow-lg shadow-emerald-500/20 hover:scale-[1.02] active:scale-95 transition-all text-sm flex items-center justify-center gap-2 disabled:opacity-50"
                     >
                       {isSubmitting ? (

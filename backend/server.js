@@ -18,6 +18,7 @@ import reviewRoutes from "./routes/reviewRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
 import analyticsRoutes from "./routes/analyticsRoutes.js";
 import inventoryRoutes from "./routes/inventoryRoutes.js";
+import paymentRoutes, { handleWebhook } from "./routes/paymentRoutes.js";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -51,6 +52,9 @@ const authLimiter = rateLimit({
 });
 app.use("/api/auth/forgot-password", authLimiter);
 
+// Webhook MUST be before express.json()
+app.post("/api/payments/webhook", express.raw({ type: "application/json" }), handleWebhook);
+
 // Middleware
 app.use(cors({ origin: "*" }));
 app.use(express.json({ limit: "10mb" })); // Reduced limit for better security, adjust if necessary
@@ -80,6 +84,7 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/analytics", analyticsRoutes);
 app.use("/api/inventory", inventoryRoutes);
+app.use("/api/payments", paymentRoutes);
 
 app.get("/api/health", (_req, res) => {
   res.json({ status: "ok", message: "AVENIR KAMIL CAR Backend is running." });

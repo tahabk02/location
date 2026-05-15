@@ -400,3 +400,14 @@ export const inventoryService = {
     return handleResponse(response);
   },
 };
+
+export const paymentService = {
+  createIntent: async (amount: number, bookingId?: string) => {
+    const response = await fetch(`${API_URL}/payments/create-intent`, {
+      method: "POST",
+      headers: getHeaders(),
+      body: JSON.stringify({ amount, bookingId }),
+    });
+    return handleResponse(response);
+  },
+};
