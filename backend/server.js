@@ -63,10 +63,15 @@ app.use(express.urlencoded({ limit: "10mb", extended: true }));
 // Middleware to ensure DB is connected
 app.use(async (req, res, next) => {
   try {
+    console.log(`Incoming request: ${req.method} ${req.url}`);
     await connectDB();
     next();
   } catch (error) {
-    res.status(500).json({ message: "Database connection error" });
+    console.error("❌ Database connection error during request:", error.message);
+    res.status(500).json({ 
+      message: "Database connection error", 
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined 
+    });
   }
 });
 
