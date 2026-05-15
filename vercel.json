@@ -13,13 +13,18 @@
   ],
   "routes": [
     {
-      "src": "/api/payments/webhook",
-      "dest": "/backend/server.js",
-      "methods": ["POST"]
-    },
-    {
       "src": "/api/(.*)",
       "dest": "/backend/server.js"
+    },
+    {
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1",
+      "continue": true
+    },
+    {
+      "src": "/(.*).(js|css|png|jpg|jpeg|svg|ico|mp4|json)",
+      "dest": "/$1.$2",
+      "continue": true
     },
     {
       "src": "/(.*)",
