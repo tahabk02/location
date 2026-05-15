@@ -9,7 +9,9 @@ const __dirname = path.dirname(__filename);
 // Load .env from the root directory (two levels up from backend/config)
 dotenv.config({ path: path.join(__dirname, "../../.env") });
 
-const uri = process.env.MONGODB_URI ?? "mongodb://127.0.0.1:27017";
+const rawUri = process.env.MONGODB_URI ?? "mongodb://127.0.0.1:27017";
+// Fix common typo or truncation in connection string (majori -> majority)
+const uri = rawUri.includes("w=majori") ? rawUri.replace("w=majori", "w=majority") : rawUri;
 const dbName = process.env.MONGODB_DB ?? "location_db";
 
 console.log("Connecting to MongoDB at:", uri.split("@")[1] || "localhost");
