@@ -51,6 +51,7 @@ export const register = async (req, res) => {
 
 export const forgotPassword = async (req, res) => {
   try {
+    console.log("Forgot password request received:", req.body);
     const { email: rawEmail } = req.body;
     if (!rawEmail) {
       return res.status(400).json({ message: "L'email est requis" });
@@ -81,13 +82,14 @@ export const forgotPassword = async (req, res) => {
       debugCode: resetCode 
     });
   } catch (error) {
-    console.error("Forgot password error:", error);
+    console.error("Forgot password error details:", error);
     res.status(500).json({ message: "Erreur lors de l'oubli du mot de passe", error: error.message });
   }
 };
 
 export const resetPassword = async (req, res) => {
   try {
+    console.log("Reset password request received:", req.body);
     const { email: rawEmail, code, newPassword } = req.body;
     if (!rawEmail || !code || !newPassword) {
       return res.status(400).json({ message: "Tous les champs sont requis" });
@@ -115,7 +117,7 @@ export const resetPassword = async (req, res) => {
 
     res.json({ message: "Mot de passe réinitialisé avec succès" });
   } catch (error) {
-    console.error("Reset password error:", error);
+    console.error("Reset password error details:", error);
     res.status(500).json({ message: "Erreur lors de la réinitialisation", error: error.message });
   }
 };

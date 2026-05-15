@@ -1,6 +1,7 @@
 import type { Car, Reservation, User } from "../types";
 
-const API_URL = "/_/backend/api";
+const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+const API_URL = isLocal ? "/api" : "/_/backend/api";
 
 async function handleResponse(response: Response) {
   const json = await response.json().catch(() => null);
