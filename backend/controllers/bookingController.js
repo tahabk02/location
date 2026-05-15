@@ -42,7 +42,27 @@ export const createBooking = async (req, res) => {
       createdAt: new Date(),
       options: options || {},
     };
-...
+
+    const result = await bookings.insertOne(booking);
+    const insertedBooking = { _id: result.insertedId, ...booking };
+
+    // Update car status to reserved
+    await cars.updateOne(
+      { _id: new ObjectId(carId) },
+      { $set: { available: false, status: "reserved" } }
+    );
+
+    // Send Admin Notifications (SMS, WhatsApp, Site)
+    await sendAdminNotification(agencyId, insertedBooking);
+
+    res.status(201).json(insertedBooking);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error creating booking", error: error.message });
+  }
+};
+
 export const signContract = async (req, res) => {
   try {
     const bookings = getCollection("bookings");
@@ -71,26 +91,6 @@ export const signContract = async (req, res) => {
   }
 };
 
-    const result = await bookings.insertOne(booking);
-    const insertedBooking = { _id: result.insertedId, ...booking };
-
-    // Update car status to reserved
-    await cars.updateOne(
-      { _id: new ObjectId(carId) },
-      { $set: { available: false, status: "reserved" } }
-    );
-
-    // Send Admin Notifications (SMS, WhatsApp, Site)
-    await sendAdminNotification(agencyId, insertedBooking);
-
-    res.status(201).json(insertedBooking);
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error creating booking", error: error.message });
-  }
-};
-
 export const getAllBookings = async (req, res) => {
   try {
     const bookings = getCollection("bookings");
@@ -98,16 +98,16 @@ export const getAllBookings = async (req, res) => {
     
     const list = await bookings
       .aggregate([
-        { $match: { $or: [{ agencyId }, { agencyId: { $exists: false } }] } },
+        { $match: { agencyId } },
         {
           $lookup: {
             from: "users",
             localField: "userId",
             foreignField: "_id",
-            as: "user",
+            as: "userDetails",
           },
         },
-        { $unwind: { path: "$user", preserveNullAndEmptyArrays: true } },
+        { $unwind: "$userDetails" },
       ])
       .toArray();
     res.json(list);
@@ -121,14 +121,13 @@ export const getAllBookings = async (req, res) => {
 export const getMyBookings = async (req, res) => {
   try {
     const bookings = getCollection("bookings");
-    const list = await bookings
-      .find({ userId: new ObjectId(req.user.id) })
-      .toArray();
+    const userId = req.user.id;
+    const list = await bookings.find({ userId: new ObjectId(userId) }).toArray();
     res.json(list);
   } catch (error) {
     res
       .status(500)
-      .json({ message: "Error fetching my bookings", error: error.message });
+      .json({ message: "Error fetching your bookings", error: error.message });
   }
 };
 
@@ -139,49 +138,40 @@ export const updateBookingStatus = async (req, res) => {
     const { status } = req.body;
     const agencyId = req.user.agencyId || "default";
 
-    const result = await bookings.updateOne(
-      { _id: new ObjectId(id), agencyId }, 
+    await bookings.updateOne(
+      { _id: new ObjectId(id), agencyId },
       { $set: { status } }
     );
-
-    if (result.matchedCount === 0) {
-      return res.status(404).json({ message: "Booking not found or unauthorized" });
-    }
-
-    res.json({ message: "Booking status updated" });
+    res.json({ message: "Booking status updated successfully" });
   } catch (error) {
     res
       .status(500)
-      .json({ message: "Error updating booking", error: error.message });
+      .json({ message: "Error updating status", error: error.message });
   }
 };
 
-export const updateBookingInspection = async (req, res) => {
+export const updateInspection = async (req, res) => {
   try {
     const bookings = getCollection("bookings");
     const { id } = req.params;
-    const { type, photos, notes } = req.body; // type: 'check-in' or 'check-out'
+    const { type, photos, notes } = req.body;
     const agencyId = req.user.agencyId || "default";
 
-    const updateData = {};
-    if (type === 'check-in') {
-      updateData.checkIn = { photos, notes, date: new Date() };
-    } else if (type === 'check-out') {
-      updateData.checkOut = { photos, notes, date: new Date() };
-    } else {
-      return res.status(400).json({ message: "Invalid inspection type" });
-    }
+    const updateField = type === 'check-in' ? 'checkInInspection' : 'checkOutInspection';
 
-    const result = await bookings.updateOne(
+    await bookings.updateOne(
       { _id: new ObjectId(id), agencyId },
-      { $set: updateData }
+      { 
+        $set: { 
+          [updateField]: {
+            photos,
+            notes,
+            date: new Date()
+          }
+        } 
+      }
     );
-
-    if (result.matchedCount === 0) {
-      return res.status(404).json({ message: "Booking not found or unauthorized" });
-    }
-
-    res.json({ message: "Booking inspection updated successfully" });
+    res.json({ message: "Inspection updated successfully" });
   } catch (error) {
     res.status(500).json({ message: "Error updating inspection", error: error.message });
   }
