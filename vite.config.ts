@@ -24,6 +24,14 @@ export default defineConfig({
   },
   plugins: [react()],
   server: {
+    host: true,
+    port: 5173,
+    strictPort: true,
+    hmr: {
+      protocol: 'ws',
+      host: 'localhost',
+      overlay: false,
+    },
     proxy: {
       "/api": "http://localhost:4000",
     },
