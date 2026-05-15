@@ -14,28 +14,28 @@ const dbName = process.env.MONGODB_DB ?? "location_db";
 
 console.log("Connecting to MongoDB at:", uri.split("@")[1] || "localhost");
 
-const client = new MongoClient(uri);
-
+let client;
 let db;
 
 export async function connectDB() {
   if (db) return db;
   try {
+    if (!client) {
+      client = new MongoClient(uri);
+    }
     await client.connect();
     console.log("✅ Successfully connected to MongoDB Database:", dbName);
     db = client.db(dbName);
     return db;
   } catch (error) {
     console.error("❌ MongoDB connection error:", error.message);
-    // Instead of exiting, we might want to try to continue if it's just a connection blip
-    // but for this project, let's keep the exit to know it failed.
-    process.exit(1);
+    throw error;
   }
 }
 
 export function getCollection(name) {
   if (!db) {
-    throw new Error("Database not initialized. Ensure connectDB was called and awaited.");
+    throw new Error("Database not initialized. Call and await connectDB() first.");
   }
   return db.collection(name);
 }

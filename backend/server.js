@@ -48,9 +48,19 @@ app.use(cors({ origin: "*" }));
 app.use(express.json({ limit: "10mb" })); // Reduced limit for better security, adjust if necessary
 app.use(express.urlencoded({ limit: "10mb", extended: true }));
 
+// Middleware to ensure DB is connected
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    res.status(500).json({ message: "Database connection error" });
+  }
+});
+
 // Routes
 app.use("/api/auth", authRoutes);
-app.use("/api/users", authRoutes); // Shares the same router, /api/users/all will work
+app.use("/api/users", authRoutes);
 app.use("/api/cars", carRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/expenses", expenseRoutes);
@@ -67,16 +77,19 @@ app.get("/api/health", (_req, res) => {
   res.json({ status: "ok", message: "AVENIR KAMIL CAR Backend is running." });
 });
 
-// Start Server
-const start = async () => {
-  try {
-    await connectDB();
-    app.listen(port, () => {
-      console.log(`🚀 AVENIR KAMIL CAR Backend listening at http://localhost:${port}`);
-    });
-  } catch (error) {
-    console.error("Failed to start server:", error);
-  }
-};
+// Start Server (only if not running on Vercel)
+if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+  const start = async () => {
+    try {
+      await connectDB();
+      app.listen(port, () => {
+        console.log(`🚀 AVENIR KAMIL CAR Backend listening at http://localhost:${port}`);
+      });
+    } catch (error) {
+      console.error("Failed to start server:", error);
+    }
+  };
+  start();
+}
 
-start();
+export default app;
