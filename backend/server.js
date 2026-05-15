@@ -71,20 +71,23 @@ app.use(async (req, res, next) => {
 });
 
 // Routes
-app.use("/api/auth", authRoutes);
-app.use("/api/users", authRoutes);
-app.use("/api/cars", carRoutes);
-app.use("/api/bookings", bookingRoutes);
-app.use("/api/expenses", expenseRoutes);
-app.use("/api/settings", settingsRoutes);
-app.use("/api/promos", promoRoutes);
-app.use("/api/agencies", agencyRoutes);
-app.use("/api/services", serviceRoutes);
-app.use("/api/reviews", reviewRoutes);
-app.use("/api/notifications", notificationRoutes);
-app.use("/api/analytics", analyticsRoutes);
-app.use("/api/inventory", inventoryRoutes);
-app.use("/api/payments", paymentRoutes);
+const apiRouter = express.Router();
+apiRouter.use("/auth", authRoutes);
+apiRouter.use("/users", authRoutes);
+apiRouter.use("/cars", carRoutes);
+apiRouter.use("/bookings", bookingRoutes);
+apiRouter.use("/expenses", expenseRoutes);
+apiRouter.use("/settings", settingsRoutes);
+apiRouter.use("/promos", promoRoutes);
+apiRouter.use("/agencies", agencyRoutes);
+apiRouter.use("/services", serviceRoutes);
+apiRouter.use("/reviews", reviewRoutes);
+apiRouter.use("/notifications", notificationRoutes);
+apiRouter.use("/analytics", analyticsRoutes);
+apiRouter.use("/inventory", inventoryRoutes);
+apiRouter.use("/payments", paymentRoutes);
+
+app.use("/api", apiRouter);
 
 app.get("/api/health", (_req, res) => {
   res.json({ status: "ok", message: "AVENIR KAMIL CAR Backend is running." });
