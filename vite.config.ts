@@ -7,21 +7,6 @@ export default defineConfig({
   build: {
     outDir: "../dist",
     emptyOutDir: true,
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          if (id.includes("node_modules")) {
-            if (id.includes("react") || id.includes("react-dom") || id.includes("react-router")) {
-              return "vendor-core";
-            }
-            if (id.includes("jspdf") || id.includes("html2canvas")) {
-              return "vendor-pdf";
-            }
-            return "vendor";
-          }
-        },
-      },
-    },
   },
   plugins: [react()],
   server: {
