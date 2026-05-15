@@ -31,6 +31,11 @@ dotenv.config({ path: path.join(__dirname, "../.env") });
 const app = express();
 const port = process.env.PORT ?? 4000;
 
+// Simple test route for Vercel diagnostic
+app.get("/api/ping", (req, res) => {
+  res.json({ message: "pong", timestamp: new Date().toISOString() });
+});
+
 // Security Middleware
 app.use(helmet()); // Basic security headers
 app.use(mongoSanitize()); // Prevent NoSQL injection
