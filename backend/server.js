@@ -70,7 +70,7 @@ app.use(async (req, res, next) => {
     console.error("❌ Database connection error during request:", error.message);
     res.status(500).json({ 
       message: "Database connection error", 
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined 
+      error: error.message // Show error even in production for now to debug Vercel
     });
   }
 });
