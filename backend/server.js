@@ -94,8 +94,21 @@ apiRouter.use("/payments", paymentRoutes);
 
 app.use("/api", apiRouter);
 
-app.get("/api/health", (_req, res) => {
-  res.json({ status: "ok", message: "AVENIR KAMIL CAR Backend is running." });
+app.get("/api/health", async (_req, res) => {
+  try {
+    await connectDB();
+    res.json({ 
+      status: "ok", 
+      message: "AVENIR KAMIL CAR Backend is running.",
+      env: {
+        node_env: process.env.NODE_ENV,
+        has_mongo: !!process.env.MONGODB_URI,
+        has_stripe: !!process.env.STRIPE_SECRET_KEY
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ status: "error", message: error.message });
+  }
 });
 
 // Start Server (only if not running on Vercel)
