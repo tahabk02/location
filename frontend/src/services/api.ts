@@ -1,7 +1,14 @@
 import type { Car, Reservation, User } from "../types";
 
-const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+const isLocal = 
+  window.location.hostname === "localhost" || 
+  window.location.hostname === "127.0.0.1" || 
+  window.location.hostname.startsWith("192.168.") || 
+  window.location.hostname.startsWith("10.") || 
+  window.location.hostname.endsWith(".local");
+
 const API_URL = isLocal ? "/api" : "/_/backend/api";
+console.log("Using API_URL:", API_URL, "on hostname:", window.location.hostname);
 
 async function handleResponse(response: Response) {
   const json = await response.json().catch(() => null);
