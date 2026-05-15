@@ -12,6 +12,10 @@ dotenv.config({ path: path.join(__dirname, "../../.env") });
 const rawUri = process.env.MONGODB_URI;
 if (!rawUri) {
   console.error("❌ FATAL: MONGODB_URI is not defined in environment variables!");
+} else {
+  // Mask URI for safety but show prefix to verify it's not a local DB
+  const maskedUri = rawUri.replace(/:([^@]+)@/, ":****@");
+  console.log("Using MONGODB_URI:", maskedUri.substring(0, 30) + "...");
 }
 const uri = rawUri?.includes("w=majori") ? rawUri.replace("w=majori", "w=majority") : (rawUri ?? "mongodb://127.0.0.1:27017");
 const dbName = process.env.MONGODB_DB ?? "location_db";

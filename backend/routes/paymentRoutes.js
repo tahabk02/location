@@ -11,13 +11,23 @@ const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.join(__dirname, "../../.env") });
 
 const router = express.Router();
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+// Lazy initialize stripe only if the key is present
+const getStripe = () => {
+  if (!process.env.STRIPE_SECRET_KEY) return null;
+  return new Stripe(process.env.STRIPE_SECRET_KEY);
+};
 
 /**
  * Create a Payment Intent
  */
 router.post("/create-intent", async (req, res) => {
   try {
+    const stripe = getStripe();
+    if (!stripe) {
+      return res.status(500).json({ message: "Le paiement par carte n'est pas configuré sur le serveur." });
+    }
+    
     const { amount, bookingId } = req.body;
 
     if (!amount || amount <= 0) {
@@ -49,6 +59,14 @@ router.post("/create-intent", async (req, res) => {
  * Handle Webhook logic in a reusable function
  */
 export const handleWebhook = async (req, res) => {
+  const stripe = getStripe();
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  
+  if (!stripe || !webhookSecret) {
+    console.error("Stripe or Webhook Secret missing");
+    return res.status(500).send("Configuration Error");
+  }
+
   const sig = req.headers["stripe-signature"];
   let event;
 
@@ -56,7 +74,7 @@ export const handleWebhook = async (req, res) => {
     event = stripe.webhooks.constructEvent(
       req.body,
       sig,
-      process.env.STRIPE_WEBHOOK_SECRET
+      webhookSecret
     );
   } catch (err) {
     console.error("Webhook Error:", err.message);

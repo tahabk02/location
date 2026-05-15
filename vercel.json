@@ -11,26 +11,19 @@
       "use": "@vercel/node"
     }
   ],
-  "rewrites": [
+  "routes": [
     {
-      "source": "/api/ping",
-      "destination": "/backend/server.js"
+      "src": "/api/payments/webhook",
+      "dest": "/backend/server.js",
+      "methods": ["POST"]
     },
     {
-      "source": "/api/health",
-      "destination": "/backend/server.js"
+      "src": "/api/(.*)",
+      "dest": "/backend/server.js"
     },
     {
-      "source": "/api/payments/webhook",
-      "destination": "/backend/server.js"
-    },
-    {
-      "source": "/api/(.*)",
-      "destination": "/backend/server.js"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 }
