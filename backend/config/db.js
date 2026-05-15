@@ -23,7 +23,11 @@ export async function connectDB() {
   if (db) return db;
   try {
     if (!client) {
-      client = new MongoClient(uri);
+      client = new MongoClient(uri, {
+        connectTimeoutMS: 10000, // 10 seconds
+        socketTimeoutMS: 45000,  // 45 seconds
+        maxPoolSize: 10,
+      });
     }
     await client.connect();
     console.log("✅ Successfully connected to MongoDB Database:", dbName);
@@ -31,6 +35,10 @@ export async function connectDB() {
     return db;
   } catch (error) {
     console.error("❌ MongoDB connection error:", error.message);
+    // On Vercel, we want to know if it's an IP whitelist issue
+    if (error.message.includes("DSRS") || error.message.includes("IP")) {
+      console.error("HINT: Check your MongoDB Atlas Network Access (Whitelist 0.0.0.0/0)");
+    }
     throw error;
   }
 }
