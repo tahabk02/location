@@ -51,15 +51,16 @@ export const register = async (req, res) => {
 
 export const forgotPassword = async (req, res) => {
   try {
-    console.log("Forgot password request received:", req.body);
-    const { email: rawEmail } = req.body;
+    const { email: rawEmail } = req.body || {};
     if (!rawEmail) {
       return res.status(400).json({ message: "L'email est requis" });
     }
     const email = rawEmail.trim().toLowerCase();
 
-    const users = getCollection("users");
+    const db = await connectDB();
+    const users = db.collection("users");
     const user = await users.findOne({ email });
+    
     if (!user) {
       return res.status(404).json({ message: "Utilisateur non trouvé avec cet email" });
     }
@@ -68,22 +69,23 @@ export const forgotPassword = async (req, res) => {
     const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
     const resetExpires = new Date(Date.now() + 3600000); // 1 heure
 
-    await users.updateOne(
+    const result = await users.updateOne(
       { _id: user._id },
       { $set: { resetCode, resetExpires } }
     );
 
-    // Dans une app réelle, on enverrait un email ici. Pour la démo, on simule.
-    console.log(`[SIMULATION EMAIL] Code de réinitialisation pour ${email} : ${resetCode}`);
-    
+    if (result.matchedCount === 0) {
+      throw new Error("Impossible de mettre à jour l'utilisateur");
+    }
+
+    // Dans une app réelle, on enverrait un email ici. Pour la démo, on affiche le code.
     res.json({ 
-      message: `[DEMO] Un code de réinitialisation a été généré : ${resetCode} (Dans une app réelle, il serait envoyé par email)`,
-      // On renvoie le code pour faciliter le test en démo si besoin, mais à retirer en prod
+      message: `[DEMO] Code de réinitialisation généré : ${resetCode}`,
       debugCode: resetCode 
     });
   } catch (error) {
     console.error("Forgot password error details:", error);
-    res.status(500).json({ message: "Erreur lors de l'oubli du mot de passe", error: error.message });
+    res.status(500).json({ message: `Erreur: ${error.message}` });
   }
 };
 
