@@ -17,14 +17,7 @@
       "dest": "/backend/server.js"
     },
     {
-      "src": "/assets/(.*)",
-      "dest": "/assets/$1",
-      "continue": true
-    },
-    {
-      "src": "/(.*).(js|css|png|jpg|jpeg|svg|ico|mp4|json)",
-      "dest": "/$1.$2",
-      "continue": true
+      "handle": "filesystem"
     },
     {
       "src": "/(.*)",
