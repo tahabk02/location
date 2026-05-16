@@ -1,13 +1,16 @@
-import "./config/env.js"; // MUST BE FIRST
+import dotenv from "dotenv";
+import path from "path";
+dotenv.config(); // Standard load
+dotenv.config({ path: path.resolve(process.cwd(), ".env") }); // Absolute load for safety
+
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
-import rateLimit from "express-rate-limit";
 import mongoSanitize from "express-mongo-sanitize";
 import compression from "compression";
 import { connectDB } from "./config/db.js";
 
-// Import Routes
+// Routes
 import authRoutes from "./routes/authRoutes.js";
 import carRoutes from "./routes/carRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
@@ -25,39 +28,26 @@ import paymentRoutes, { handleWebhook } from "./routes/paymentRoutes.js";
 const app = express();
 const port = process.env.PORT || 4000;
 
-// Security Middleware
-app.use(helmet());
+app.use(helmet({ contentSecurityPolicy: false })); // Disable CSP to avoid client issues for now
 app.use(mongoSanitize());
 app.use(compression());
-
-// Webhook MUST be before express.json()
-app.post("/api/payments/webhook", express.raw({ type: "application/json" }), handleWebhook);
-
-// Basic Middleware
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ limit: "10mb", extended: true }));
 
-// Middleware to ensure DB is connected
+// Simple middleware
 app.use(async (req, res, next) => {
-  if (req.path === "/api/health" || req.path === "/api/ping") return next();
+  if (req.path.startsWith("/api/health")) return next();
   try {
     await connectDB();
     next();
   } catch (error) {
-    console.error("❌ Database connection error:", error.message);
-    res.status(500).json({ 
-      message: "Database connection error", 
-      error: error.message,
-      hint: "Check MONGODB_URI in Vercel Environment Variables"
-    });
+    res.status(500).json({ error: "Connection Failed", details: error.message });
   }
 });
 
-// Routes
 const apiRouter = express.Router();
 apiRouter.use("/auth", authRoutes);
-apiRouter.use("/users", authRoutes);
 apiRouter.use("/cars", carRoutes);
 apiRouter.use("/bookings", bookingRoutes);
 apiRouter.use("/expenses", expenseRoutes);
@@ -73,24 +63,21 @@ apiRouter.use("/payments", paymentRoutes);
 
 app.use("/api", apiRouter);
 
-// Health Check
-app.get("/api/health", (req, res) => {
-  res.json({ status: "ok", message: "Backend is alive" });
+app.get("/api/health", (req, res) => res.json({ status: "ok" }));
+
+app.get("/api/debug", (req, res) => {
+  res.json({
+    env: {
+      has_uri: !!process.env.MONGODB_URI,
+      db_name: process.env.MONGODB_DB,
+      node_env: process.env.NODE_ENV
+    },
+    time: new Date().toISOString()
+  });
 });
 
-// Start Server (only if not running on Vercel)
 if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
-  const start = async () => {
-    try {
-      await connectDB();
-      app.listen(port, () => {
-        console.log(`🚀 Server listening at http://localhost:${port}`);
-      });
-    } catch (error) {
-      console.error("Failed to start server:", error);
-    }
-  };
-  start();
+  app.listen(port, () => console.log(`🚀 Server on ${port}`));
 }
 
 export default app;

@@ -1,16 +1,17 @@
 import { MongoClient } from "mongodb";
 
-const uri = process.env.MONGODB_URI;
-const dbName = process.env.MONGODB_DB || "location_db";
-
-let client;
-let db;
+let client = null;
+let db = null;
 
 export async function connectDB() {
   if (db) return db;
-  
+
+  const uri = process.env.MONGODB_URI;
+  const dbName = process.env.MONGODB_DB || "location_db";
+
   if (!uri) {
-    throw new Error("MONGODB_URI is not defined f environment variables");
+    console.error("MONGODB_URI is missing");
+    throw new Error("Missing MONGODB_URI");
   }
 
   try {
@@ -19,17 +20,16 @@ export async function connectDB() {
     }
     await client.connect();
     db = client.db(dbName);
-    console.log("✅ MongoDB Connected successfully");
     return db;
   } catch (error) {
-    console.error("❌ MongoDB Connection Error:", error.message);
+    console.error("DB Connection Error:", error.message);
     throw error;
   }
 }
 
 export function getCollection(name) {
   if (!db) {
-    throw new Error("Database not initialized. Call connectDB first.");
+    throw new Error("DB not connected");
   }
   return db.collection(name);
 }
