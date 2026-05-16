@@ -5,7 +5,6 @@ const isLocal =
   window.location.hostname === "127.0.0.1";
 
 const API_URL = "/api";
-console.log("Using API_URL:", API_URL, "on hostname:", window.location.hostname);
 
 async function handleResponse(response: Response) {
   const json = await response.json().catch(() => null);
@@ -19,13 +18,19 @@ async function handleResponse(response: Response) {
 
 const getHeaders = () => {
   const user = JSON.parse(localStorage.getItem("user") || "null");
-  const headers = {
+  const headers: any = {
     "Content-Type": "application/json",
-    "x-user-role": user?.role || "",
-    "x-user-id": user?.id || user?._id || "",
-    "x-agency-id": user?.agencyId || "default",
   };
-  console.log("API Headers:", headers);
+  
+  if (user?.token) {
+    headers["Authorization"] = `Bearer ${user.token}`;
+  } else {
+    // Legacy support (optional, can be removed once fully migrated)
+    headers["x-user-role"] = user?.role || "";
+    headers["x-user-id"] = user?.id || user?._id || "";
+    headers["x-agency-id"] = user?.agencyId || "default";
+  }
+  
   return headers;
 };
 

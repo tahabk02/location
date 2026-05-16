@@ -55,13 +55,9 @@ function App() {
       <LanguageProvider>
         <AuthProvider>
           <ThemeProvider>
-            {stripePromise ? (
-              <Elements stripe={stripePromise}>
-                <AppContent />
-              </Elements>
-            ) : (
+            <Elements stripe={stripePromise}>
               <AppContent />
-            )}
+            </Elements>
           </ThemeProvider>
         </AuthProvider>
       </LanguageProvider>

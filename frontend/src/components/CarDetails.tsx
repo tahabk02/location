@@ -1238,7 +1238,7 @@ export const CarDetails: React.FC<CarDetailsProps> = ({
                     </button>
 
                     {/* Stripe Card Option (Only if keys available) */}
-                    {stripePromise && (
+                    {stripe && (
                       <div className={`p-4 rounded-2xl border-2 transition-all ${
                         paymentData.method === 'card'
                           ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'

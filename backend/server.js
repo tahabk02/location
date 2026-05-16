@@ -61,23 +61,25 @@ app.use("/api/auth/forgot-password", authLimiter);
 app.post("/api/payments/webhook", express.raw({ type: "application/json" }), handleWebhook);
 
 // Middleware
-app.use(cors({ origin: "*" }));
-app.use(express.json({ limit: "10mb" })); // Reduced limit for better security, adjust if necessary
+const allowedOrigins = [process.env.FRONTEND_URL, "http://localhost:5173", "https://votre-domaine.com"];
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin) || process.env.NODE_ENV !== "production") {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true
+}));
+
+app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ limit: "10mb", extended: true }));
 
-// Middleware to ensure DB is connected
-app.use(async (req, res, next) => {
-  try {
-    console.log(`Incoming request: ${req.method} ${req.url}`);
-    await connectDB();
-    next();
-  } catch (error) {
-    console.error("❌ Database connection error during request:", error.message);
-    res.status(500).json({ 
-      message: "Database connection error", 
-      error: error.message // Show error even in production for now to debug Vercel
-    });
-  }
+// Log requests (optional but helpful)
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+  next();
 });
 
 // Routes
