@@ -74,42 +74,19 @@ export const createBooking = async (req, res) => {
   }
 };
 
-export const signContract = async (req, res) => {
-  try {
-    const bookings = getCollection("bookings");
-    const { id } = req.params;
-    const { signature } = req.body; // base64 image
-    const agencyId = req.user.agencyId || "default";
-
-    const result = await bookings.updateOne(
-      { _id: new ObjectId(id), agencyId },
-      { 
-        $set: { 
-          signature, 
-          signedAt: new Date(),
-          isSigned: true 
-        } 
-      }
-    );
-
-    if (result.matchedCount === 0) {
-      return res.status(404).json({ message: "Booking not found" });
-    }
-
-    res.json({ message: "Contrat signé avec succès" });
-  } catch (error) {
-    res.status(500).json({ message: "Erreur lors de la signature", error: error.message });
-  }
-};
-
 export const getAllBookings = async (req, res) => {
   try {
     const bookings = getCollection("bookings");
     const agencyId = req.user.agencyId || "default";
     
+    // Superadmin sees everything, Admin sees their agency or legacy data
+    const matchQuery = req.user.role === "superadmin" 
+      ? {} 
+      : { $or: [{ agencyId }, { agencyId: { $exists: false } }] };
+
     const list = await bookings
       .aggregate([
-        { $match: { agencyId } },
+        { $match: matchQuery },
         {
           $lookup: {
             from: "users",
@@ -118,27 +95,23 @@ export const getAllBookings = async (req, res) => {
             as: "userDetails",
           },
         },
-        { $unwind: "$userDetails" },
+        // Using $unwind with preserveNullAndEmptyArrays in case user was deleted
+        { $unwind: { path: "$userDetails", preserveNullAndEmptyArrays: true } },
+        { $sort: { createdAt: -1 } }
       ])
       .toArray();
-    res.json(list);
+
+    // Map to ensure user object exists even if lookup failed
+    const formattedList = list.map(b => ({
+      ...b,
+      user: b.userDetails || { name: "Utilisateur inconnu", email: "N/A" }
+    }));
+
+    res.json(formattedList);
   } catch (error) {
     res
       .status(500)
       .json({ message: "Error fetching bookings", error: error.message });
-  }
-};
-
-export const getMyBookings = async (req, res) => {
-  try {
-    const bookings = getCollection("bookings");
-    const userId = req.user.id;
-    const list = await bookings.find({ userId: new ObjectId(userId) }).toArray();
-    res.json(list);
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error fetching your bookings", error: error.message });
   }
 };
 
@@ -149,10 +122,20 @@ export const updateBookingStatus = async (req, res) => {
     const { status } = req.body;
     const agencyId = req.user.agencyId || "default";
 
-    await bookings.updateOne(
-      { _id: new ObjectId(id), agencyId },
-      { $set: { status } }
+    const query = { _id: new ObjectId(id) };
+    if (req.user.role !== "superadmin") {
+      query.$or = [{ agencyId }, { agencyId: { $exists: false } }];
+    }
+
+    const result = await bookings.updateOne(
+      query,
+      { $set: { status, updatedAt: new Date() } }
     );
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ message: "Booking not found or unauthorized" });
+    }
+
     res.json({ message: "Booking status updated successfully" });
   } catch (error) {
     res
@@ -170,20 +153,65 @@ export const updateBookingInspection = async (req, res) => {
 
     const updateField = type === 'check-in' ? 'checkInInspection' : 'checkOutInspection';
 
-    await bookings.updateOne(
-      { _id: new ObjectId(id), agencyId },
+    const query = { _id: new ObjectId(id) };
+    if (req.user.role !== "superadmin") {
+      query.$or = [{ agencyId }, { agencyId: { $exists: false } }];
+    }
+
+    const result = await bookings.updateOne(
+      query,
       { 
         $set: { 
           [updateField]: {
             photos,
             notes,
             date: new Date()
-          }
+          },
+          updatedAt: new Date()
         } 
       }
     );
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ message: "Booking not found or unauthorized" });
+    }
+
     res.json({ message: "Inspection updated successfully" });
   } catch (error) {
     res.status(500).json({ message: "Error updating inspection", error: error.message });
+  }
+};
+
+export const signContract = async (req, res) => {
+  try {
+    const bookings = getCollection("bookings");
+    const { id } = req.params;
+    const { signature } = req.body; // base64 image
+    const agencyId = req.user.agencyId || "default";
+
+    const query = { _id: new ObjectId(id) };
+    if (req.user.role !== "superadmin") {
+      query.$or = [{ agencyId }, { agencyId: { $exists: false } }];
+    }
+
+    const result = await bookings.updateOne(
+      query,
+      { 
+        $set: { 
+          signature, 
+          signedAt: new Date(),
+          isSigned: true,
+          updatedAt: new Date()
+        } 
+      }
+    );
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ message: "Booking not found or unauthorized" });
+    }
+
+    res.json({ message: "Contrat signé avec succès" });
+  } catch (error) {
+    res.status(500).json({ message: "Erreur lors de la signature", error: error.message });
   }
 };

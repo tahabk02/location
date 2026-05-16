@@ -227,7 +227,12 @@ export const getProfile = async (req, res) => {
 export const getAllUsers = async (req, res) => {
   try {
     const users = getCollection("users");
-    const query = req.user.role === "superadmin" ? {} : { agencyId: req.user.agencyId };
+    const agencyId = req.user.agencyId || "default";
+    
+    const query = req.user.role === "superadmin" 
+      ? {} 
+      : { $or: [{ agencyId }, { agencyId: { $exists: false } }] };
+
     const list = await users
       .find(query, { projection: { password: 0 } })
       .toArray();
@@ -252,7 +257,7 @@ export const deleteUser = async (req, res) => {
 
     const query = { _id: new ObjectId(id) };
     if (req.user.role !== "superadmin") {
-      query.agencyId = agencyId;
+      query.$or = [{ agencyId }, { agencyId: { $exists: false } }];
     }
 
     const result = await users.deleteOne(query);

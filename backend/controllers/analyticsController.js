@@ -1,19 +1,27 @@
 import { getCollection } from "../config/db.js";
 import { ObjectId } from "mongodb";
 
+const getAgencyMatch = (req) => {
+  if (req.user.role === "superadmin") return {};
+  const agencyId = req.user.agencyId || "default";
+  return { $or: [{ agencyId }, { agencyId: { $exists: false } }] };
+};
+
 export const getFinancialSummary = async (req, res) => {
   try {
     const bookings = getCollection("bookings");
     const expenses = getCollection("expenses");
+    const match = getAgencyMatch(req);
 
     // Total Revenue (only confirmed bookings)
     const revenueData = await bookings.aggregate([
-      { $match: { status: "confirmed" } },
+      { $match: { ...match, status: "confirmed" } },
       { $group: { _id: null, total: { $sum: "$totalAmount" }, count: { $sum: 1 } } }
     ]).toArray();
 
     // Total Expenses
     const expenseData = await expenses.aggregate([
+      { $match: match },
       { $group: { _id: null, total: { $sum: "$amount" }, count: { $sum: 1 } } }
     ]).toArray();
 
@@ -29,12 +37,12 @@ export const getFinancialSummary = async (req, res) => {
     const firstDayLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
 
     const thisMonthRevenue = await bookings.aggregate([
-      { $match: { status: "confirmed", createdAt: { $gte: firstDayThisMonth } } },
+      { $match: { ...match, status: "confirmed", createdAt: { $gte: firstDayThisMonth } } },
       { $group: { _id: null, total: { $sum: "$totalAmount" } } }
     ]).toArray();
 
     const lastMonthRevenue = await bookings.aggregate([
-      { $match: { status: "confirmed", createdAt: { $gte: firstDayLastMonth, $lt: firstDayThisMonth } } },
+      { $match: { ...match, status: "confirmed", createdAt: { $gte: firstDayLastMonth, $lt: firstDayThisMonth } } },
       { $group: { _id: null, total: { $sum: "$totalAmount" } } }
     ]).toArray();
 
@@ -61,10 +69,11 @@ export const getMonthlyStats = async (req, res) => {
   try {
     const bookings = getCollection("bookings");
     const expenses = getCollection("expenses");
+    const match = getAgencyMatch(req);
 
     // Monthly Revenue & Bookings
     const revenueStats = await bookings.aggregate([
-      { $match: { status: "confirmed" } },
+      { $match: { ...match, status: "confirmed" } },
       {
         $group: {
           _id: { $dateToString: { format: "%Y-%m", date: { $toDate: "$startDate" } } },
@@ -77,6 +86,7 @@ export const getMonthlyStats = async (req, res) => {
 
     // Monthly Expenses
     const expenseStats = await expenses.aggregate([
+      { $match: match },
       {
         $group: {
           _id: { $dateToString: { format: "%Y-%m", date: { $toDate: "$date" } } },
@@ -111,17 +121,18 @@ export const getCarPerformance = async (req, res) => {
     const bookings = getCollection("bookings");
     const expenses = getCollection("expenses");
     const cars = getCollection("cars");
+    const match = getAgencyMatch(req);
 
-    const carList = await cars.find({}).toArray();
+    const carList = await cars.find(match).toArray();
 
     const performance = await Promise.all(carList.map(async (car) => {
       const carRevenue = await bookings.aggregate([
-        { $match: { carId: car._id, status: "confirmed" } },
+        { $match: { ...match, carId: car._id, status: "confirmed" } },
         { $group: { _id: null, total: { $sum: "$totalAmount" }, count: { $sum: 1 } } }
       ]).toArray();
 
       const carExpenses = await expenses.aggregate([
-        { $match: { carId: car._id.toString() } },
+        { $match: { ...match, carId: car._id.toString() } },
         { $group: { _id: null, total: { $sum: "$amount" } } }
       ]).toArray();
 
@@ -149,7 +160,10 @@ export const getCarPerformance = async (req, res) => {
 export const getExpenseBreakdown = async (req, res) => {
   try {
     const expenses = getCollection("expenses");
+    const match = getAgencyMatch(req);
+
     const breakdown = await expenses.aggregate([
+      { $match: match },
       { $group: { _id: "$category", total: { $sum: "$amount" }, count: { $sum: 1 } } },
       { $sort: { total: -1 } }
     ]).toArray();
