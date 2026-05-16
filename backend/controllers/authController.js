@@ -2,6 +2,7 @@ import { getCollection } from "../config/db.js";
 import { ObjectId } from "mongodb";
 import { sendResetEmail } from "../services/notificationService.js";
 import bcrypt from "bcryptjs";
+
 import jwt from "jsonwebtoken";
 
 const JWT_SECRET = process.env.JWT_SECRET || "fallback_secret";
