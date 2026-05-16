@@ -11,20 +11,42 @@ const JWT_SECRET = process.env.JWT_SECRET || "fallback_secret";
 
 export const login = async (req, res) => {
   const { email, password } = req.body;
+  if (!email || !password) {
+    return res.status(400).json({ message: "Email and password are required" });
+  }
+
   try {
     const users = getCollection("users");
-    const user = await users.findOne({ email: email.toLowerCase() });
+    // Support both exact match and lowercase match for backward compatibility
+    const user = await users.findOne({ 
+      $or: [
+        { email: email },
+        { email: email.toLowerCase() },
+        { email: email.trim() }
+      ]
+    });
+
     if (!user) {
+      console.log(`Login failed: User not found for ${email}`);
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    let isMatch = false;
+    try {
+      isMatch = await bcrypt.compare(password, user.password);
+    } catch (bcryptErr) {
+      console.warn("Bcrypt compare failed, checking plain text:", bcryptErr.message);
+    }
+
     if (!isMatch) {
       // For migration: if it matches plain text, re-hash it
       if (password === user.password) {
+        console.log(`Migrating user ${email} to hashed password`);
         const hashedPassword = await bcrypt.hash(password, 10);
         await users.updateOne({ _id: user._id }, { $set: { password: hashedPassword } });
+        isMatch = true;
       } else {
+        console.log(`Login failed: Password mismatch for ${email}`);
         return res.status(401).json({ message: "Invalid credentials" });
       }
     }
@@ -38,7 +60,8 @@ export const login = async (req, res) => {
     const { _id, password: _, ...userInfo } = user;
     res.json({ token, id: _id.toString(), ...userInfo });
   } catch (error) {
-    res.status(500).json({ message: "Login error", error: error.message });
+    console.error("Critical Login Error:", error);
+    res.status(500).json({ message: "Login error", details: error.message });
   }
 };
 
