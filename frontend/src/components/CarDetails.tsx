@@ -74,9 +74,8 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { Header } from "./Header";
-import { getCars, bookingService, paymentService } from "../services/api";
+import { getCars, bookingService } from "../services/api";
 import { motion, AnimatePresence } from "framer-motion";
-import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
 
 interface CarDetailsProps {
   carId?: string | null;
@@ -88,8 +87,6 @@ export const CarDetails: React.FC<CarDetailsProps> = ({
   onBack,
 }) => {
   const navigate = useNavigate();
-  const stripe = useStripe();
-  const elements = useElements();
   const { id: urlCarId } = useParams<{ id: string }>();
   const id = propCarId || urlCarId;
 
@@ -109,10 +106,6 @@ export const CarDetails: React.FC<CarDetailsProps> = ({
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [bookingStep, setBookingStep] = useState(1);
-  const [paymentData, setPaymentData] = useState({
-    method: 'agency', // Default to agency payment
-    cardName: "",
-  });
   const [selectedLocation, setSelectedLocation] = useState(
     "Casablanca - Ain Diab",
   );
@@ -264,7 +257,7 @@ export const CarDetails: React.FC<CarDetailsProps> = ({
   };
 
   const handleNextStep = async () => {
-    if (bookingStep < 5) {
+    if (bookingStep < 4) { // Reduced steps since payment is simplified
       setBookingStep(bookingStep + 1);
     } else {
       setIsSubmitting(true);
@@ -284,40 +277,13 @@ export const CarDetails: React.FC<CarDetailsProps> = ({
             insurance: insuranceOption,
             location: selectedLocation,
           },
-          paymentMethod: paymentData.method,
-          paymentStatus: paymentData.method === "card" ? "pending" : "to_be_paid",
+          paymentMethod: "agency",
+          paymentStatus: "to_be_paid",
         };
 
-        // 2. Handle Stripe Payment if selected
-        if (paymentData.method === "card") {
-          if (!stripe || !elements) throw new Error("Stripe n'est pas configuré");
-          
-          const booking = await bookingService.create(bookingData);
-          const { clientSecret } = await paymentService.createIntent(totalAmount, booking._id);
-
-          const cardElement = elements.getElement(CardElement);
-          if (!cardElement) throw new Error("Erreur de configuration de la carte");
-
-          const result = await stripe.confirmCardPayment(clientSecret, {
-            payment_method: {
-              card: cardElement,
-              billing_details: {
-                name: paymentData.cardName,
-                email: user?.email,
-              },
-            },
-          });
-
-          if (result.error) throw new Error(result.error.message);
-
-          if (result.paymentIntent.status === "succeeded") {
-            alert("Paiement réussi ! Votre réservation est confirmée.");
-          }
-        } else {
-          // Agency Payment
-          await bookingService.create(bookingData);
-          alert("Réservation confirmée ! Vous pouvez régler à l'agence lors de la récupération.");
-        }
+        // Agency Payment
+        await bookingService.create(bookingData);
+        alert("Réservation confirmée ! Vous pouvez régler à l'agence lors de la récupération.");
 
         setShowBookingModal(false);
         navigate("/client");
@@ -1191,130 +1157,11 @@ export const CarDetails: React.FC<CarDetailsProps> = ({
                     </button>
                     <button
                       onClick={handleNextStep}
+                      disabled={isSubmitting}
                       className="flex-1 py-2.5 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-bold hover:shadow-xl transition-all text-sm flex items-center justify-center gap-1.5"
                     >
-                      Procéder au paiement
+                      {isSubmitting ? "Traitement..." : "Confirmer la réservation"}
                       <ArrowRight className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* Step 5: Payment */}
-              {bookingStep === 5 && (
-                <div className="space-y-4">
-                  <div className="text-center">
-                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 mb-2">
-                      <ShieldCheck className="w-6 h-6" />
-                    </div>
-                    <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
-                      Mode de Paiement
-                    </h2>
-                    <p className="text-gray-500 dark:text-gray-400 text-xs">
-                      Choisissez comment vous souhaitez régler votre réservation
-                    </p>
-                  </div>
-
-                  <div className="space-y-3">
-                    {/* Agency Payment Option */}
-                    <button
-                      onClick={() => setPaymentData({ ...paymentData, method: 'agency' })}
-                      className={`w-full p-4 rounded-2xl border-2 transition-all text-left flex items-center gap-4 ${
-                        paymentData.method === 'agency'
-                          ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'
-                          : 'border-gray-200 dark:border-gray-800 hover:border-gray-300'
-                      }`}
-                    >
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                        paymentData.method === 'agency' ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-400'
-                      }`}>
-                        <Home className="w-5 h-5" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-bold text-sm dark:text-white">Paiement à l'agence (Cash)</p>
-                        <p className="text-[10px] text-gray-500 font-medium tracking-tight">Réservez maintenant, payez lors de la récupération</p>
-                      </div>
-                      {paymentData.method === 'agency' && <CheckCircle className="w-5 h-5 text-blue-600" />}
-                    </button>
-
-                    {/* Stripe Card Option (Only if keys available) */}
-                    {stripe && (
-                      <div className={`p-4 rounded-2xl border-2 transition-all ${
-                        paymentData.method === 'card'
-                          ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'
-                          : 'border-gray-200 dark:border-gray-800'
-                      }`}>
-                        <button
-                          onClick={() => setPaymentData({ ...paymentData, method: 'card' })}
-                          className="w-full text-left flex items-center gap-4 mb-3"
-                        >
-                          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                            paymentData.method === 'card' ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-400'
-                          }`}>
-                            <CreditCard className="w-5 h-5" />
-                          </div>
-                          <div className="flex-1">
-                            <p className="font-bold text-sm dark:text-white">Carte Bancaire (Visa/Mastercard)</p>
-                            <p className="text-[10px] text-gray-500 font-medium tracking-tight">Paiement en ligne sécurisé via Stripe</p>
-                          </div>
-                          {paymentData.method === 'card' && <CheckCircle className="w-5 h-5 text-blue-600" />}
-                        </button>
-
-                        {paymentData.method === 'card' && (
-                          <div className="space-y-3 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                            <div>
-                              <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1 mb-1">Nom sur la carte</label>
-                              <input 
-                                type="text"
-                                value={paymentData.cardName}
-                                onChange={(e) => setPaymentData({...paymentData, cardName: e.target.value})}
-                                placeholder="M. AHMED ALAMI"
-                                className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all dark:text-white"
-                              />
-                            </div>
-                            <div>
-                              <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1 mb-1">Détails de la carte</label>
-                              <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl py-4 px-4">
-                                <CardElement
-                                  options={{
-                                    style: {
-                                      base: { fontSize: '16px', color: '#fff', '::placeholder': { color: '#9ca3af' } },
-                                      invalid: { color: '#ef4444' }
-                                    }
-                                  }}
-                                />
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => setBookingStep(4)}
-                      disabled={isSubmitting}
-                      className="flex-1 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-bold hover:bg-gray-200 transition-all text-sm disabled:opacity-50"
-                    >
-                      Retour
-                    </button>
-                    <button
-                      onClick={handleNextStep}
-                      disabled={isSubmitting || (paymentData.method === 'card' && !paymentData.cardName) || !paymentData.method}
-                      className="flex-[2] py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-black shadow-lg shadow-emerald-500/20 hover:scale-[1.02] active:scale-95 transition-all text-sm flex items-center justify-center gap-2 disabled:opacity-50"
-                    >
-                      {isSubmitting ? (
-                        <div className="flex items-center gap-2">
-                          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                          Traitement...
-                        </div>
-                      ) : (
-                        <>
-                          {paymentData.method === 'card' ? <Lock className="w-4 h-4" /> : <CheckCircle className="w-4 h-4" />}
-                          {paymentData.method === 'card' ? 'Payer' : 'Confirmer'} {calculateTotal() + calculateInsurance() + (selectedLocation.includes("domicile") ? 50 : 0)} DH
-                        </>
-                      )}
                     </button>
                   </div>
                 </div>

@@ -4,14 +4,6 @@ import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { lazy, Suspense } from "react";
 import { FloatingWhatsApp } from "./components/FloatingWhatsApp";
-import { Elements } from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js";
-
-const stripePublishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
-if (!stripePublishableKey) {
-  console.warn("VITE_STRIPE_PUBLISHABLE_KEY is missing. Stripe functionality will be disabled.");
-}
-const stripePromise = stripePublishableKey ? loadStripe(stripePublishableKey) : null;
 
 // Lazy loading components
 const HomePage = lazy(() => import("./pages/Home").then(m => ({ default: m.HomePage })));
@@ -55,9 +47,7 @@ function App() {
       <LanguageProvider>
         <AuthProvider>
           <ThemeProvider>
-            <Elements stripe={stripePromise}>
-              <AppContent />
-            </Elements>
+            <AppContent />
           </ThemeProvider>
         </AuthProvider>
       </LanguageProvider>
