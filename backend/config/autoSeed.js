@@ -71,30 +71,35 @@ export async function autoSeed() {
     const carCount = await carsCollection.countDocuments();
     console.log(`📊 Current car count in DB: ${carCount}`);
     
-    // Check if we need to seed
     if (carCount === 0) {
-      console.log("🌱 Database is EMPTY. Starting seed process...");
+      console.log("🌱 Cars collection is EMPTY. Seeding cars...");
       await carsCollection.insertMany(defaultCars);
       console.log("✅ Default cars inserted.");
-      
-      // Seed default admin user if missing
-      const usersCollection = getCollection("users");
-      const userCount = await usersCollection.countDocuments();
-      console.log(`📊 Current user count in DB: ${userCount}`);
+    }
 
-      if (userCount === 0) {
-        console.log("👤 No users found. Seeding admin...");
-        const hashedPassword = await bcrypt.hash("admin123", 10);
-        await usersCollection.insertOne({
-          name: "Admin",
-          email: "admin@test.com",
-          password: hashedPassword,
-          role: "admin",
-          agencyId: "default",
-          createdAt: new Date()
-        });
-        console.log("✅ Admin user seeded (admin@test.com / admin123).");
-      }
+    // Seed default admin user if missing (ALWAYS CHECK INDEPENDENTLY)
+    const usersCollection = getCollection("users");
+    const userCount = await usersCollection.countDocuments();
+    console.log(`📊 Current user count in DB: ${userCount}`);
+
+    if (userCount === 0) {
+      console.log("👤 No users found. Seeding admin user...");
+      const hashedPassword = await bcrypt.hash("admin123", 10);
+      await usersCollection.insertOne({
+        name: "Admin",
+        email: "admin@test.com",
+        password: hashedPassword,
+        role: "admin",
+        agencyId: "default",
+        createdAt: new Date()
+      });
+      console.log("✅ Admin user seeded (admin@test.com / admin123).");
+    }
+
+    // Also seed default settings if missing
+    const settingsCollection = getCollection("settings");
+    const settingsCount = await settingsCollection.countDocuments();
+    if (settingsCount === 0) {
 
       // Also seed default settings if missing
       const settingsCollection = getCollection("settings");
