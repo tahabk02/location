@@ -70,6 +70,7 @@ export function HomePage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [showIntro, setShowIntro] = useState(true);
+  const [apiStatus, setApiStatus] = useState<string>("checking");
 
   const { scrollY, scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
@@ -82,6 +83,14 @@ export function HomePage() {
   const headerOpacity = useTransform(scrollY, [0, 50], [1, 0.95]);
 
   useEffect(() => {
+    // Debug: Check API Health
+    fetch("/api/health")
+      .then(r => {
+        if (r.ok) setApiStatus("online");
+        else setApiStatus(`error-${r.status}`);
+      })
+      .catch(e => setApiStatus(`failed-${e.message}`));
+
     // Check if intro was already shown in this session
     const introShown = sessionStorage.getItem("introShown");
     if (introShown) {
@@ -267,6 +276,14 @@ export function HomePage() {
           className="fixed top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 z-[60] origin-left"
           style={{ scaleX }}
         />
+
+        {/* API Debug Banner */}
+        <div className={`fixed top-0 left-0 right-0 z-[200] text-[10px] font-bold text-center py-1 transition-colors ${
+          apiStatus === 'online' ? 'bg-green-500/20 text-green-700 hidden' : 
+          apiStatus === 'checking' ? 'bg-yellow-500/20 text-yellow-700' : 'bg-red-500 text-white'
+        }`}>
+          API STATUS: {apiStatus.toUpperCase()} {apiStatus.includes('failed') || apiStatus.includes('error') ? '- BACKEND IS NOT REACHABLE' : ''}
+        </div>
 
         <motion.div
           style={{ y: headerY, opacity: headerOpacity }}
