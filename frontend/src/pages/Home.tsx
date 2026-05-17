@@ -94,15 +94,27 @@ export function HomePage() {
     const fetchSettings = async () => {
       try {
         const [settings, dbReviews] = await Promise.all([
-          settingsService.get(),
-          reviewService.getAll()
+          settingsService.get().catch(err => {
+            console.warn("Could not fetch settings:", err);
+            return null;
+          }),
+          reviewService.getAll().catch(err => {
+            console.warn("Could not fetch reviews:", err);
+            return [];
+          })
         ]);
-        setGalleryImages(settings.galleryImages || []);
-        setGalleryVideoUrl(settings.galleryVideoUrl || "");
-        setAgencySettings(settings || {});
-        setReviews(dbReviews || []);
+        
+        if (settings) {
+          setGalleryImages(settings.galleryImages || []);
+          setGalleryVideoUrl(settings.galleryVideoUrl || "");
+          setAgencySettings(settings || {});
+        }
+        
+        if (dbReviews) {
+          setReviews(dbReviews || []);
+        }
       } catch (err) {
-        console.error("Error loading home data:", err);
+        console.error("Critical error in home data fetch:", err);
       }
     };
     fetchSettings();
