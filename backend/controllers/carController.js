@@ -117,19 +117,32 @@ export const updateCar = async (req, res) => {
 
 export const deleteCar = async (req, res) => {
   try {
+    const { id } = req.params;
+    if (!ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Format d'ID invalide" });
+    }
+
     const cars = getCollection("cars");
     const agencyId = req.user?.agencyId || "default";
-    const result = await cars.deleteOne({ _id: new ObjectId(req.params.id), agencyId });
+    
+    // Superadmin can delete anything, Admin can only delete from their agency
+    const query = { _id: new ObjectId(id) };
+    if (req.user.role !== "superadmin") {
+      query.$or = [{ agencyId }, { agencyId: { $exists: false } }];
+    }
+
+    const result = await cars.deleteOne(query);
     
     if (result.deletedCount === 0) {
-      return res.status(404).json({ message: "Car not found or unauthorized" });
+      return res.status(404).json({ message: "Voiture non trouvée ou non autorisée" });
     }
     
-    res.json({ message: "Car deleted successfully" });
+    res.json({ message: "Voiture supprimée avec succès" });
   } catch (error) {
+    console.error("❌ Delete car error:", error);
     res
       .status(500)
-      .json({ message: "Error deleting car", error: error.message });
+      .json({ message: "Erreur lors de la suppression", error: error.message });
   }
 };
 
