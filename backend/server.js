@@ -39,6 +39,10 @@ try {
   app.post("/api/payments/webhook", express.raw({ type: "application/json" }), handleWebhook);
 
   // 2. Global Middleware
+  app.use((req, res, next) => {
+    console.log(`[DEBUG] ${req.method} ${req.path} - FullUrl: ${req.originalUrl}`);
+    next();
+  });
   app.use(helmet({ contentSecurityPolicy: false })); 
   app.use(mongoSanitize());
   app.use(compression());
@@ -48,9 +52,8 @@ try {
 
   // 3. Database Connection Middleware (With detailed error reveal)
   app.use(async (req, res, next) => {
-    console.log(`📡 Incoming request: ${req.method} ${req.path}`);
     // Health check bypass
-    if (req.path === "/api/health" || req.path === "/api/reveal-error" || req.path === "/api/debug") return next();
+    if (req.path === "/api/health" || req.path === "/api/reveal-error" || req.path === "/api/debug" || req.path === "/health" || req.path === "/debug") return next();
     
     try {
       await connectDB();
@@ -84,10 +87,13 @@ try {
   apiRouter.use("/inventory", inventoryRoutes);
   apiRouter.use("/payments", paymentRoutes);
 
+  // Mount at both to be safe with Vercel routing
   app.use("/api", apiRouter);
+  app.use("/", apiRouter);
 
   // 5. Base & Debug Routes
   app.get("/api/health", (req, res) => res.json({ status: "ok", time: new Date().toISOString() }));
+  app.get("/health", (req, res) => res.json({ status: "ok", time: new Date().toISOString() }));
   app.get("/api/debug", async (req, res) => {
     console.log("🛠️ Debug route called");
     try {
@@ -102,6 +108,14 @@ try {
     } catch (err) {
       console.error("❌ Debug route failed:", err.message);
       res.status(500).json({ status: "error", message: err.message, stack: err.stack });
+    }
+  });
+  app.get("/debug", async (req, res) => {
+    try {
+      await connectDB();
+      res.json({ status: "connected" });
+    } catch (err) {
+      res.status(500).json({ status: "error", message: err.message });
     }
   });
   app.get("/api/reveal-error", (req, res) => {
