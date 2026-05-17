@@ -45,7 +45,7 @@ app.use(async (req, res, next) => {
     await connectDB();
     next();
   } catch (error) {
-    console.error("🔥 DB connection error in middleware:", error.message);
+    console.error("🔥 DB connection error:", error.message);
     res.status(500).json({ 
       message: "Database connection failed", 
       details: error.message 
@@ -74,12 +74,8 @@ app.use("/api", apiRouter);
 
 // Health Checks
 app.get("/api/health", (req, res) => res.json({ status: "ok" }));
-app.get("/api/debug", (req, res) => res.json({
-  vercel: !!process.env.VERCEL,
-  env_loaded: !!process.env.MONGODB_URI
-}));
 
-// 5. Global Error Handler for Vercel Logs
+// 5. Global Error Handler
 app.use((err, req, res, next) => {
   console.error("Critical error:", err.message);
   res.status(500).json({ error: "Internal Server Error", details: err.message });
