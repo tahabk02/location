@@ -1,4 +1,5 @@
 import { getCollection } from "./db.js";
+import bcrypt from "bcryptjs";
 
 const defaultCars = [
   {
@@ -68,11 +69,28 @@ export async function autoSeed() {
     const carsCollection = getCollection("cars");
     const carCount = await carsCollection.countDocuments();
     
+    // Check if we need to seed
     if (carCount === 0) {
       console.log("🌱 Database is empty. Seeding initial data...");
       await carsCollection.insertMany(defaultCars);
       console.log("✅ Seeded initial car list.");
       
+      // Seed default admin user if missing
+      const usersCollection = getCollection("users");
+      const userCount = await usersCollection.countDocuments();
+      if (userCount === 0) {
+        const hashedPassword = await bcrypt.hash("admin123", 10);
+        await usersCollection.insertOne({
+          name: "Admin",
+          email: "admin@test.com",
+          password: hashedPassword,
+          role: "admin",
+          agencyId: "default",
+          createdAt: new Date()
+        });
+        console.log("✅ Seeded default admin user (admin@test.com / admin123).");
+      }
+
       // Also seed default settings if missing
       const settingsCollection = getCollection("settings");
       const settingsCount = await settingsCollection.countDocuments();
