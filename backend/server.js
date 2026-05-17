@@ -5,6 +5,7 @@ import helmet from "helmet";
 import mongoSanitize from "express-mongo-sanitize";
 import compression from "compression";
 import { connectDB } from "./config/db.js";
+import { autoSeed } from "./config/autoSeed.js";
 
 // Load environment variables locally
 if (!process.env.VERCEL) {
@@ -50,6 +51,8 @@ try {
     
     try {
       await connectDB();
+      // Auto-seed if database is empty (Runs once per cold start/request if empty)
+      await autoSeed();
       next();
     } catch (dbError) {
       console.error("🔥 DATABASE CONNECTION FAILED:", dbError.message);
