@@ -11,12 +11,12 @@ if (!cached) {
 }
 
 export async function connectDB() {
-  // Prioritize MONGODB_DB as requested by user
-  const uri = process.env.MONGODB_DB || process.env.MONGODB_URI;
+  const uri = process.env.MONGODB_URI;
+  const dbName = process.env.MONGODB_DB || "location";
 
   if (!uri) {
-    console.error("❌ ERROR: MONGODB_DB or MONGODB_URI is NOT defined");
-    throw new Error("Base de données non configurée");
+    console.error("❌ ERROR: MONGODB_URI is NOT defined in Vercel settings");
+    throw new Error("Base de données non configurée (MONGODB_URI manquante)");
   }
 
   // Check if we have a valid connection already
@@ -26,18 +26,17 @@ export async function connectDB() {
 
   // If we are already connecting, wait for the existing promise
   if (cached.promise) {
-    console.log("⏳ Waiting for existing MongoDB connection promise...");
-    cached.conn = await cached.promise;
-    return cached.conn;
+    return cached.promise;
   }
 
   const opts = {
-    bufferCommands: true, // Allow mongoose to buffer commands while connecting
+    bufferCommands: true,
     maxPoolSize: 1,
-    serverSelectionTimeoutMS: 10000, // Timeout after 10s
+    dbName: dbName, // Use MONGODB_DB as the database name
+    serverSelectionTimeoutMS: 10000,
   };
 
-  console.log("📡 Connecting to MongoDB Atlas...");
+  console.log(`📡 Connecting to MongoDB Atlas (DB: ${dbName})...`);
   cached.promise = mongoose.connect(uri, opts).then((mongooseInstance) => {
     console.log("✅ MongoDB Connected Successfully");
     return mongooseInstance;
