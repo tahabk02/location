@@ -4,15 +4,24 @@ import { sendAdminNotification } from "../services/notificationService.js";
 
 export const createBooking = async (req, res) => {
   try {
+    const { carId, startDate, endDate, location, options } = req.body;
+    console.log(`🆕 Creating booking for car: ${carId} by user: ${req.user.id}`);
+
+    if (!carId || !ObjectId.isValid(carId)) {
+      return res.status(400).json({ message: "Invalid carId format" });
+    }
+
     const bookings = getCollection("bookings");
     const cars = getCollection("cars");
-    const { carId, startDate, endDate, location, options } = req.body;
-    const bookingLocation = location || options?.location || "Maroc";
     const userId = req.user.id;
+    const bookingLocation = location || options?.location || "Maroc";
 
-    // Get car info for the invoice and to get the agencyId
+    // Get car info
     const car = await cars.findOne({ _id: new ObjectId(carId) });
-    if (!car) return res.status(404).json({ message: "Car not found" });
+    if (!car) {
+      console.warn(`❌ Car not found: ${carId}`);
+      return res.status(404).json({ message: "Car not found" });
+    }
 
     const agencyId = car.agencyId || "default";
 
@@ -64,10 +73,15 @@ export const createBooking = async (req, res) => {
     );
 
     // Send Admin Notifications (SMS, WhatsApp, Site)
-    await sendAdminNotification(agencyId, insertedBooking);
+    try {
+      await sendAdminNotification(agencyId, insertedBooking);
+    } catch (notifErr) {
+      console.error("⚠️ Notification failed but booking created:", notifErr.message);
+    }
 
     res.status(201).json(insertedBooking);
   } catch (error) {
+    console.error("🔥 Booking Creation Error:", error);
     res
       .status(500)
       .json({ message: "Error creating booking", error: error.message });

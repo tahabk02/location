@@ -4,11 +4,28 @@ import { ObjectId } from "mongodb";
 export const getAllCars = async (req, res) => {
   try {
     const cars = getCollection("cars");
-    // Filter by agencyId if provided in query (for public) or from user (for admin)
-    const agencyId = req.query.agencyId || req.user?.agencyId || "default";
-    const list = await cars.find({ 
-      $or: [{ agencyId }, { agencyId: { $exists: false } }] 
-    }).toArray();
+    const userRole = req.user?.role;
+    const userAgencyId = req.user?.agencyId || "default";
+
+    let query = {};
+
+    // If not superadmin, filter by agency
+    if (userRole !== "superadmin") {
+      const agencyId = req.query.agencyId || userAgencyId;
+      query = { 
+        $or: [{ agencyId }, { agencyId: { $exists: false } }] 
+      };
+    }
+    
+    // If public request (no user) and agencyId provided in query
+    if (!req.user && req.query.agencyId) {
+      query = { agencyId: req.query.agencyId };
+    } else if (!req.user && !req.query.agencyId) {
+      // Default public view
+      query = { $or: [{ agencyId: "default" }, { agencyId: { $exists: false } }] };
+    }
+
+    const list = await cars.find(query).toArray();
     res.json(list);
   } catch (error) {
     res
@@ -98,10 +115,12 @@ export const updateCar = async (req, res) => {
     delete updateData._id;
     delete updateData.agencyId; // Don't allow changing agency
 
-    const result = await cars.updateOne(
-      { _id: new ObjectId(id), agencyId }, 
-      { $set: updateData }
-    );
+    const query = { _id: new ObjectId(id) };
+    if (req.user.role !== "superadmin") {
+      query.agencyId = agencyId;
+    }
+
+    const result = await cars.updateOne(query, { $set: updateData });
     
     if (result.matchedCount === 0) {
       return res.status(404).json({ message: "Car not found or unauthorized" });
@@ -153,10 +172,12 @@ export const updateCarStatus = async (req, res) => {
     const { status, available } = req.body;
     const agencyId = req.user?.agencyId || "default";
     
-    await cars.updateOne(
-      { _id: new ObjectId(id), agencyId },
-      { $set: { status, available, updatedAt: new Date() } }
-    );
+    const query = { _id: new ObjectId(id) };
+    if (req.user.role !== "superadmin") {
+      query.agencyId = agencyId;
+    }
+
+    await cars.updateOne(query, { $set: { status, available, updatedAt: new Date() } });
     res.json({ message: "Car status updated successfully" });
   } catch (error) {
     res.status(500).json({ message: "Error updating car status", error: error.message });
@@ -167,11 +188,9 @@ export const getMaintenanceAlerts = async (req, res) => {
   try {
     const cars = getCollection("cars");
     const agencyId = req.user?.agencyId || "default";
-    console.log(`🔍 Fetching maintenance alerts for agency: ${agencyId}`);
     
-    // Fetch all cars for this agency
-    const allCars = await cars.find({ agencyId }).toArray();
-    console.log(`📊 Found ${allCars.length} cars to check for alerts`);
+    const query = req.user.role === "superadmin" ? {} : { agencyId };
+    const allCars = await cars.find(query).toArray();
     
     const today = new Date();
     const fifteenDaysLater = new Date(today.getTime() + (15 * 24 * 60 * 60 * 1000));
@@ -183,22 +202,18 @@ export const getMaintenanceAlerts = async (req, res) => {
                               (car.technicalVisitExpiry && car.technicalVisitExpiry <= fifteenDaysStr) ||
                               (car.vignetteExpiry && car.vignetteExpiry <= fifteenDaysStr);
         
-        // Safety check for numeric values
         const nextOil = Number(car.nextOilChangeKm);
         const lastOil = Number(car.lastOilChangeKm);
         const hasOilAlert = !isNaN(nextOil) && !isNaN(lastOil) && nextOil > 0 && (nextOil - lastOil <= 1000);
         
         return hasExpiryAlert || hasOilAlert;
       } catch (e) {
-        console.error(`Error processing alert for car ${car._id}:`, e);
         return false;
       }
     });
     
-    console.log(`✅ Found ${alerts.length} active alerts`);
     res.json(alerts);
   } catch (error) {
-    console.error("Error fetching alerts:", error);
     res.status(500).json({ message: "Error fetching alerts", error: error.message });
   }
 };

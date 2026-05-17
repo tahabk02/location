@@ -7,16 +7,10 @@ export const getSettings = async (req, res) => {
     
     let data = await settings.findOne({ agencyId });
     
-    // If we requested 'default' but the document is missing or has no images, 
-    // try to find ANY other settings document that might have been created.
-    if (agencyId === "default" && (!data || !data.galleryImages || data.galleryImages.length === 0)) {
-      const anyOtherSettings = await settings.findOne({ 
-        agencyId: { $ne: "default" },
-        galleryImages: { $exists: true, $not: { $size: 0 } }
-      });
-      if (anyOtherSettings) {
-        data = anyOtherSettings;
-      }
+    // If missing, check if it's the 'default' one
+    if (!data && (agencyId === "default" || req.user?.role === "superadmin")) {
+        // Find ANY settings if we are superadmin and 'default' is missing
+        data = await settings.findOne({});
     }
 
     const defaults = {
@@ -39,8 +33,8 @@ export const getSettings = async (req, res) => {
     };
 
     if (!data) {
-      data = { ...defaults, agencyId };
-      await settings.insertOne(data);
+      data = { ...defaults, agencyId: agencyId || "default" };
+      // Don't auto-insert here to avoid pollution, just return defaults
     }
     
     res.json(data);
@@ -52,7 +46,9 @@ export const getSettings = async (req, res) => {
 export const updateSettings = async (req, res) => {
   try {
     const settings = getCollection("settings");
-    const agencyId = req.user?.agencyId || "default";
+    // If superadmin, allow updating by agencyId in body or query, else use user's agencyId
+    const agencyId = (req.user?.role === "superadmin" ? (req.body.agencyId || req.query.agencyId) : null) || req.user?.agencyId || "default";
+    
     const updateData = { ...req.body };
     delete updateData._id;
     delete updateData.agencyId;
