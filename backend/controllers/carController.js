@@ -9,20 +9,21 @@ export const getAllCars = async (req, res) => {
 
     let query = {};
 
-    // If not superadmin, filter by agency
-    if (userRole !== "superadmin") {
-      const agencyId = req.query.agencyId || userAgencyId;
-      query = { 
-        $or: [{ agencyId }, { agencyId: { $exists: false } }] 
-      };
+    // For public (no user), show only default or unassigned cars
+    if (!req.user) {
+      if (req.query.agencyId) {
+        query = { agencyId: req.query.agencyId };
+      } else {
+        query = { $or: [{ agencyId: "default" }, { agencyId: { $exists: false } }] };
+      }
+    } 
+    // For clients, show their agency cars
+    else if (userRole === "client") {
+      query = { $or: [{ agencyId: userAgencyId }, { agencyId: { $exists: false } }] };
     }
-    
-    // If public request (no user) and agencyId provided in query
-    if (!req.user && req.query.agencyId) {
-      query = { agencyId: req.query.agencyId };
-    } else if (!req.user && !req.query.agencyId) {
-      // Default public view
-      query = { $or: [{ agencyId: "default" }, { agencyId: { $exists: false } }] };
+    // For admin and superadmin, show EVERYTHING to avoid 'empty data' confusion
+    else {
+      query = {};
     }
 
     const list = await cars.find(query).toArray();

@@ -43,5 +43,21 @@ export const authorize = (roles = []) => {
   };
 };
 
+export const optionalAuthorize = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return next();
+  }
+  const token = authHeader.split(" ")[1];
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (error) {
+    // Ignore invalid token for optional auth
+    next();
+  }
+};
+
 export const auth = authorize();
 export const adminOnly = authorize(["admin"]);

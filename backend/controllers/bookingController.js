@@ -106,12 +106,14 @@ export const getMyBookings = async (req, res) => {
 export const getAllBookings = async (req, res) => {
   try {
     const bookings = getCollection("bookings");
-    const agencyId = req.user.agencyId || "default";
+    const userRole = req.user?.role;
+    const userAgencyId = req.user?.agencyId || "default";
     
-    // Superadmin sees everything, Admin sees their agency or legacy data
-    const matchQuery = req.user.role === "superadmin" 
-      ? {} 
-      : { $or: [{ agencyId }, { agencyId: { $exists: false } }] };
+    // Superadmin and Admin see everything to avoid empty data
+    let matchQuery = {};
+    if (userRole !== "superadmin" && userRole !== "admin") {
+      matchQuery = { $or: [{ agencyId: userAgencyId }, { agencyId: { $exists: false } }] };
+    }
 
     const list = await bookings
       .aggregate([

@@ -1,10 +1,10 @@
 import express from "express";
 import { getAllCars, getCarById, createCar, updateCar, deleteCar, updateCarStatus, getMaintenanceAlerts } from "../controllers/carController.js";
-import { authorize } from "../middleware/auth.js";
+import { authorize, optionalAuthorize } from "../middleware/auth.js";
 
 const router = express.Router();
 
-router.get("/", getAllCars);
+router.get("/", optionalAuthorize, getAllCars);
 router.get("/alerts", authorize(["admin"]), getMaintenanceAlerts);
 router.get("/:id", getCarById);
 
