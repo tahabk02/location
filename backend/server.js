@@ -1,8 +1,10 @@
 import dotenv from "dotenv";
 import path from "path";
 
-// Initialize dotenv for local development (Vercel uses its own variables)
-dotenv.config();
+// Initialize dotenv only for local development
+if (!process.env.VERCEL) {
+  dotenv.config();
+}
 
 import express from "express";
 import cors from "cors";
@@ -79,6 +81,17 @@ app.use("/api", apiRouter);
 // Health Check
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok", message: "Backend is operational" });
+});
+
+app.get("/api/debug", (req, res) => {
+  res.json({
+    env: {
+      has_mongodb_uri: !!process.env.MONGODB_URI,
+      mongodb_db: process.env.MONGODB_DB,
+      node_env: process.env.NODE_ENV,
+      is_vercel: !!process.env.VERCEL
+    }
+  });
 });
 
 // Start Server (only if not running on Vercel)
