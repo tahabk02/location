@@ -1,17 +1,15 @@
 import dotenv from "dotenv";
-import path from "path";
-
-// Initialize dotenv only for local development
-if (!process.env.VERCEL) {
-  dotenv.config();
-}
-
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import mongoSanitize from "express-mongo-sanitize";
 import compression from "compression";
 import { connectDB } from "./config/db.js";
+
+// Load environment variables for local development
+if (!process.env.VERCEL) {
+  dotenv.config();
+}
 
 // Import Routes
 import authRoutes from "./routes/authRoutes.js";
@@ -29,37 +27,33 @@ import inventoryRoutes from "./routes/inventoryRoutes.js";
 import paymentRoutes, { handleWebhook } from "./routes/paymentRoutes.js";
 
 const app = express();
-const port = process.env.PORT || 4000;
 
-// Security & Optimization
+// 1. Webhook (Must be before body-parser)
+app.post("/api/payments/webhook", express.raw({ type: "application/json" }), handleWebhook);
+
+// 2. Global Middleware
 app.use(helmet({ contentSecurityPolicy: false })); 
 app.use(mongoSanitize());
 app.use(compression());
-
-// Webhook MUST be before express.json()
-app.post("/api/payments/webhook", express.raw({ type: "application/json" }), handleWebhook);
-
-// Basic Middleware
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ limit: "10mb", extended: true }));
 
-// Database connection middleware with clear error reporting
+// 3. Database Connection Middleware (Optimized for Serverless)
 app.use(async (req, res, next) => {
-  if (req.path === "/api/health" || req.path === "/api/ping") return next();
   try {
     await connectDB();
     next();
   } catch (error) {
-    console.error("Critical DB Failure:", error.message);
+    console.error("🔥 DB connection error in middleware:", error.message);
     res.status(500).json({ 
-      message: error.message || "Erreur de connexion à la base de données",
-      error: true
+      message: "Database connection failed", 
+      details: error.message 
     });
   }
 });
 
-// Routes
+// 4. Routes
 const apiRouter = express.Router();
 apiRouter.use("/auth", authRoutes);
 apiRouter.use("/users", authRoutes);
@@ -78,45 +72,26 @@ apiRouter.use("/payments", paymentRoutes);
 
 app.use("/api", apiRouter);
 
-// Health Check
-app.get("/api/health", (req, res) => {
-  res.json({ status: "ok", message: "Backend is operational" });
-});
+// Health Checks
+app.get("/api/health", (req, res) => res.json({ status: "ok" }));
+app.get("/api/debug", (req, res) => res.json({
+  vercel: !!process.env.VERCEL,
+  env_loaded: !!process.env.MONGODB_URI
+}));
 
-app.get("/api/debug", (req, res) => {
-  res.json({
-    env: {
-      has_mongodb_uri: !!process.env.MONGODB_URI,
-      mongodb_db: process.env.MONGODB_DB,
-      node_env: process.env.NODE_ENV,
-      is_vercel: !!process.env.VERCEL
-    }
-  });
-});
-
-// Global Error Handler - Very important for Vercel logging
+// 5. Global Error Handler for Vercel Logs
 app.use((err, req, res, next) => {
-  console.error("🔥 Server Error:", err.stack);
-  res.status(err.status || 500).json({
-    message: err.message || "Internal Server Error",
-    error: process.env.NODE_ENV === "development" ? err.message : "Internal Server Error",
-    stack: process.env.NODE_ENV === "development" ? err.stack : undefined
-  });
+  console.error("Critical error:", err.message);
+  res.status(500).json({ error: "Internal Server Error", details: err.message });
 });
 
-// Start Server (only if not running on Vercel)
-if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
-  const start = async () => {
-    try {
-      await connectDB();
-      app.listen(port, () => {
-        console.log(`🚀 Server listening at http://localhost:${port}`);
-      });
-    } catch (error) {
-      console.error("Failed to start server locally:", error);
-    }
-  };
-  start();
+// 6. Local Server Startup (Disabled on Vercel)
+if (!process.env.VERCEL) {
+  const port = process.env.PORT || 4000;
+  app.listen(port, () => {
+    console.log(`🚀 Server running locally at http://localhost:${port}`);
+  });
 }
 
+// 7. EXPORT FOR VERCEL
 export default app;
