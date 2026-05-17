@@ -11,11 +11,11 @@ if (!cached) {
 }
 
 export async function connectDB() {
-  const uri = process.env.MONGODB_URI;
+  const uri = process.env.MONGODB_URI || process.env.MONGODB_DB;
 
   if (!uri) {
-    console.error("FATAL: MONGODB_URI is not defined");
-    throw new Error("Base de données non configurée (MONGODB_URI manquante)");
+    console.error("FATAL: Neither MONGODB_URI nor MONGODB_DB is defined");
+    throw new Error("Base de données non configurée (MONGODB_URI/MONGODB_DB manquante)");
   }
 
   if (cached.conn) {
