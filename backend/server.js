@@ -94,6 +94,16 @@ app.get("/api/debug", (req, res) => {
   });
 });
 
+// Global Error Handler - Very important for Vercel logging
+app.use((err, req, res, next) => {
+  console.error("🔥 Server Error:", err.stack);
+  res.status(err.status || 500).json({
+    message: err.message || "Internal Server Error",
+    error: process.env.NODE_ENV === "development" ? err.message : "Internal Server Error",
+    stack: process.env.NODE_ENV === "development" ? err.stack : undefined
+  });
+});
+
 // Start Server (only if not running on Vercel)
 if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
   const start = async () => {

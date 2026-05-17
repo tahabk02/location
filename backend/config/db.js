@@ -1,38 +1,50 @@
-import { MongoClient } from "mongodb";
+import mongoose from "mongoose";
 
-const uri = process.env.MONGODB_URI;
-const dbName = process.env.MONGODB_DB || "location_db";
+const MONGODB_URI = process.env.MONGODB_URI;
 
-let client = null;
-let db = null;
+if (!MONGODB_URI) {
+  throw new Error("Please define the MONGODB_URI environment variable inside .env or Vercel dashboard");
+}
 
-export async function connectDB() {
-  if (db) return db;
+/**
+ * Global is used here to maintain a cached connection across hot reloads
+ * in development and function invocations in serverless environments.
+ */
+let cached = global.mongoose;
 
-  if (!uri) {
-    throw new Error("MONGODB_URI is missing f environment variables");
+if (!cached) {
+  cached = global.mongoose = { conn: null, promise: null };
+}
+
+async function connectDB() {
+  if (cached.conn) {
+    return cached.conn;
+  }
+
+  if (!cached.promise) {
+    const opts = {
+      bufferCommands: false,
+    };
+
+    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+      console.log("✅ New Mongoose connection established");
+      return mongoose;
+    });
   }
 
   try {
-    if (!client) {
-      client = new MongoClient(uri);
-    }
-    await client.connect();
-    db = client.db(dbName);
-    console.log("Connected to DB");
-    return db;
-  } catch (error) {
-    console.error("DB Connection Error:", error.message);
-    // Reset so next request tries again
-    client = null;
-    db = null;
-    throw new Error(`Connection failed: ${error.message}`);
+    cached.conn = await cached.promise;
+  } catch (e) {
+    cached.promise = null;
+    console.error("❌ Mongoose connection error:", e.message);
+    throw e;
   }
+
+  return cached.conn;
 }
 
-export function getCollection(name) {
-  if (!db) {
-    throw new Error("DB not initialized");
-  }
-  return db.collection(name);
-}
+export default connectDB;
+
+// Keep original function names for compatibility with other files if they use them
+export { connectDB as connect };
+export const getCollection = (name) => mongoose.connection.collection(name);
