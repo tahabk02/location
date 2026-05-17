@@ -2,36 +2,35 @@ import mongoose from "mongoose";
 
 /**
  * Global cache for Mongoose connection.
- * Essential for Vercel Serverless Functions to reuse connections and avoid 500 errors.
+ * Essential for Vercel Serverless Functions to reuse connections.
  */
-let cached = global.mongoose;
+let cached = globalThis.mongoose;
 
 if (!cached) {
-  cached = global.mongoose = { conn: null, promise: null };
+  cached = globalThis.mongoose = { conn: null, promise: null };
 }
 
 export async function connectDB() {
   const uri = process.env.MONGODB_URI;
 
   if (!uri) {
-    throw new Error("MONGODB_URI is not defined. Please add it to Vercel Environment Variables.");
+    console.error("FATAL: MONGODB_URI is not defined");
+    throw new Error("Base de données non configurée (MONGODB_URI manquante)");
   }
 
-  // If connection is already established, return it
   if (cached.conn) {
     return cached.conn;
   }
 
-  // If no connection promise exists, create one
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
       maxPoolSize: 1, // Keep pool small for serverless
     };
 
-    console.log("📡 Initiating new MongoDB connection...");
+    console.log("📡 Connecting to MongoDB Atlas...");
     cached.promise = mongoose.connect(uri, opts).then((mongooseInstance) => {
-      console.log("✅ MongoDB Connection Successful");
+      console.log("✅ MongoDB Connected");
       return mongooseInstance;
     });
   }
@@ -39,8 +38,8 @@ export async function connectDB() {
   try {
     cached.conn = await cached.promise;
   } catch (e) {
-    cached.promise = null; // Reset promise on failure
-    console.error("❌ MongoDB Connection Error:", e.message);
+    cached.promise = null; // Clear promise on error
+    console.error("❌ MongoDB connection failed:", e.message);
     throw e;
   }
 
@@ -48,12 +47,11 @@ export async function connectDB() {
 }
 
 /**
- * Helper to get a native MongoDB collection from Mongoose.
- * Compatible with existing controller logic.
+ * Helper to get collection (compatible with original controllers)
  */
 export const getCollection = (name) => {
   if (mongoose.connection.readyState !== 1) {
-    throw new Error(`Database not connected (readyState: ${mongoose.connection.readyState}). Cannot get collection ${name}.`);
+    throw new Error(`DB not ready (readyState: ${mongoose.connection.readyState})`);
   }
   return mongoose.connection.collection(name);
 };

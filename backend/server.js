@@ -6,6 +6,11 @@ import mongoSanitize from "express-mongo-sanitize";
 import compression from "compression";
 import { connectDB } from "./config/db.js";
 
+// Load environment variables locally
+if (!process.env.VERCEL) {
+  dotenv.config();
+}
+
 // Routes Imports
 import authRoutes from "./routes/authRoutes.js";
 import carRoutes from "./routes/carRoutes.js";
@@ -21,18 +26,13 @@ import analyticsRoutes from "./routes/analyticsRoutes.js";
 import inventoryRoutes from "./routes/inventoryRoutes.js";
 import paymentRoutes, { handleWebhook } from "./routes/paymentRoutes.js";
 
-// Initialize environment variables for local dev
-if (!process.env.VERCEL) {
-  dotenv.config();
-}
-
 const app = express();
 
 /**
- * PRODUCTION VISIBILITY PATCH & SERVERLESS OPTIMIZATION
+ * ABSOLUTE VISIBILITY PATCH
  */
 try {
-  // 1. Webhook (Must be before body-parser)
+  // 1. Webhook - Early processing
   app.post("/api/payments/webhook", express.raw({ type: "application/json" }), handleWebhook);
 
   // 2. Global Middleware
@@ -43,21 +43,21 @@ try {
   app.use(express.json({ limit: "10mb" }));
   app.use(express.urlencoded({ limit: "10mb", extended: true }));
 
-  // 3. Database Connection Middleware (Awaited for each request)
+  // 3. Database Connection Middleware (With detailed error reveal)
   app.use(async (req, res, next) => {
-    // Skip DB for health checks
-    if (req.path === "/api/health" || req.path === "/api/ping") return next();
+    // Health check bypass
+    if (req.path === "/api/health" || req.path === "/api/reveal-error") return next();
     
     try {
       await connectDB();
       next();
     } catch (dbError) {
-      console.error("🔥 FATAL DB ERROR:", dbError.message);
+      console.error("🔥 DATABASE CONNECTION FAILED:", dbError.message);
       res.status(500).json({ 
         success: false, 
-        message: "DATABASE_CONNECTION_FAILED", 
+        message: "DATABASE_CONNECTION_ERROR", 
         error: dbError.message,
-        stack: process.env.NODE_ENV === "development" ? dbError.stack : undefined
+        stack: dbError.stack 
       });
     }
   });
@@ -81,16 +81,19 @@ try {
 
   app.use("/api", apiRouter);
 
-  // 5. Health Check Endpoints
-  app.get("/api/health", (req, res) => res.json({ status: "ok", env: process.env.NODE_ENV }));
-  app.get("/", (req, res) => res.send("Backend Live and Operational"));
+  // 5. Base & Debug Routes
+  app.get("/api/health", (req, res) => res.json({ status: "ok", time: new Date().toISOString() }));
+  app.get("/api/reveal-error", (req, res) => {
+    throw new Error("Visibility Test: Error reveal middleware is operational.");
+  });
+  app.get("/", (req, res) => res.send("Backend Live"));
 
-  // 6. Global Error Handler (Reveals exact errors in JSON)
+  // 6. Global Exception Catcher (The Ultimate Reveal)
   app.use((err, req, res, next) => {
-    console.error("🔥 UNHANDLED EXCEPTION:", err);
+    console.error("🔥 UNHANDLED FATAL ERROR:", err);
     res.status(500).json({
       success: false,
-      message: "FATAL_SERVER_ERROR",
+      message: "FATAL_SERVER_EXCEPTION",
       error: err.message,
       stack: err.stack,
       path: req.path
@@ -98,16 +101,14 @@ try {
   });
 
 } catch (initError) {
-  console.error("❌ SERVER INITIALIZATION FAILED:", initError);
+  console.error("❌ CRITICAL INITIALIZATION FAILURE:", initError);
 }
 
-// 7. Local Startup (Disabled on Vercel)
+// 7. Local Dev Startup
 if (!process.env.VERCEL) {
   const port = process.env.PORT || 4000;
-  app.listen(port, () => {
-    console.log(`🚀 Development server running at http://localhost:${port}`);
-  });
+  app.listen(port, () => console.log(`🚀 Development server at http://localhost:${port}`));
 }
 
-// 8. EXPORT FOR VERCEL HANDLER
+// 8. SERVERLESS EXPORT
 export default app;
