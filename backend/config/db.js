@@ -4,10 +4,10 @@ import mongoose from "mongoose";
  * Global cache for Mongoose connection.
  * Essential for Vercel Serverless Functions to reuse connections.
  */
-let cached = globalThis.mongoose;
+let cached = global.mongoose;
 
 if (!cached) {
-  cached = globalThis.mongoose = { conn: null, promise: null };
+  cached = global.mongoose = { conn: null, promise: null };
 }
 
 export async function connectDB() {
