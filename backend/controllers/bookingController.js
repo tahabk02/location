@@ -81,10 +81,14 @@ export const createBooking = async (req, res) => {
 
     res.status(201).json(insertedBooking);
   } catch (error) {
-    console.error("🔥 Booking Creation Error:", error);
+    console.error("🔥 FATAL Booking Creation Error:", error);
     res
       .status(500)
-      .json({ message: "Error creating booking", error: error.message });
+      .json({ 
+        message: "Error creating booking", 
+        error: error.message,
+        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined 
+      });
   }
 };
 
