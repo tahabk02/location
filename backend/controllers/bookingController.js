@@ -74,6 +74,21 @@ export const createBooking = async (req, res) => {
   }
 };
 
+export const getMyBookings = async (req, res) => {
+  try {
+    const bookings = getCollection("bookings");
+    const list = await bookings
+      .find({ userId: new ObjectId(req.user.id) })
+      .sort({ createdAt: -1 })
+      .toArray();
+    res.json(list);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error fetching my bookings", error: error.message });
+  }
+};
+
 export const getAllBookings = async (req, res) => {
   try {
     const bookings = getCollection("bookings");
