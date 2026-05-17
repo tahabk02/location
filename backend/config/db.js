@@ -14,9 +14,13 @@ export async function connectDB() {
   const uri = process.env.MONGODB_URI || process.env.MONGODB_DB;
 
   if (!uri) {
-    console.error("FATAL: Neither MONGODB_URI nor MONGODB_DB is defined");
-    throw new Error("Base de données non configurée (MONGODB_URI/MONGODB_DB manquante)");
+    console.error("❌ ERROR: MONGODB_URI/MONGODB_DB is NOT defined in Vercel settings");
+    throw new Error("Base de données non configurée (Variables d'environnement manquantes)");
   }
+
+  // Log a masked version of the URI for debugging
+  const maskedUri = uri.replace(/\/\/(.*):(.*)@/, "//***:***@");
+  console.log(`🔌 Attempting to connect to: ${maskedUri}`);
 
   if (cached.conn) {
     return cached.conn;

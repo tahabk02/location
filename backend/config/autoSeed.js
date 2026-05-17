@@ -65,20 +65,25 @@ const defaultCars = [
 ];
 
 export async function autoSeed() {
+  console.log("🔍 Auto-seed check started...");
   try {
     const carsCollection = getCollection("cars");
     const carCount = await carsCollection.countDocuments();
+    console.log(`📊 Current car count in DB: ${carCount}`);
     
     // Check if we need to seed
     if (carCount === 0) {
-      console.log("🌱 Database is empty. Seeding initial data...");
+      console.log("🌱 Database is EMPTY. Starting seed process...");
       await carsCollection.insertMany(defaultCars);
-      console.log("✅ Seeded initial car list.");
+      console.log("✅ Default cars inserted.");
       
       // Seed default admin user if missing
       const usersCollection = getCollection("users");
       const userCount = await usersCollection.countDocuments();
+      console.log(`📊 Current user count in DB: ${userCount}`);
+
       if (userCount === 0) {
+        console.log("👤 No users found. Seeding admin...");
         const hashedPassword = await bcrypt.hash("admin123", 10);
         await usersCollection.insertOne({
           name: "Admin",
@@ -88,7 +93,7 @@ export async function autoSeed() {
           agencyId: "default",
           createdAt: new Date()
         });
-        console.log("✅ Seeded default admin user (admin@test.com / admin123).");
+        console.log("✅ Admin user seeded (admin@test.com / admin123).");
       }
 
       // Also seed default settings if missing

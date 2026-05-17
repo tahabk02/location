@@ -29,6 +29,8 @@ import paymentRoutes, { handleWebhook } from "./routes/paymentRoutes.js";
 
 const app = express();
 
+console.log("🚀 Backend initialization starting...");
+
 /**
  * ABSOLUTE VISIBILITY PATCH
  */
@@ -46,8 +48,9 @@ try {
 
   // 3. Database Connection Middleware (With detailed error reveal)
   app.use(async (req, res, next) => {
+    console.log(`📡 Incoming request: ${req.method} ${req.path}`);
     // Health check bypass
-    if (req.path === "/api/health" || req.path === "/api/reveal-error") return next();
+    if (req.path === "/api/health" || req.path === "/api/reveal-error" || req.path === "/api/debug") return next();
     
     try {
       await connectDB();
@@ -59,8 +62,7 @@ try {
       res.status(500).json({ 
         success: false, 
         message: "DATABASE_CONNECTION_ERROR", 
-        error: dbError.message,
-        stack: dbError.stack 
+        error: dbError.message
       });
     }
   });
@@ -87,15 +89,19 @@ try {
   // 5. Base & Debug Routes
   app.get("/api/health", (req, res) => res.json({ status: "ok", time: new Date().toISOString() }));
   app.get("/api/debug", async (req, res) => {
+    console.log("🛠️ Debug route called");
     try {
       await connectDB();
       res.json({ 
         status: "connected", 
-        env_db_key: process.env.MONGODB_DB ? "set" : "missing",
-        env_uri_key: process.env.MONGODB_URI ? "set" : "missing"
+        db_key: process.env.MONGODB_DB ? "OK" : "MISSING",
+        uri_key: process.env.MONGODB_URI ? "OK" : "MISSING",
+        node_env: process.env.NODE_ENV,
+        vercel_env: process.env.VERCEL_ENV || "local"
       });
     } catch (err) {
-      res.status(500).json({ status: "error", message: err.message });
+      console.error("❌ Debug route failed:", err.message);
+      res.status(500).json({ status: "error", message: err.message, stack: err.stack });
     }
   });
   app.get("/api/reveal-error", (req, res) => {
