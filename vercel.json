@@ -1,16 +1,5 @@
 {
   "version": 2,
-  "experimentalServices": {
-    "web": {
-      "entrypoint": ".",
-      "routePrefix": "/",
-      "framework": "vite"
-    },
-    "api": {
-      "entrypoint": "api/index.js",
-      "routePrefix": "/api"
-    }
-  },
   "rewrites": [
     {
       "source": "/api/(.*)",

@@ -86,6 +86,18 @@ try {
 
   // 5. Base & Debug Routes
   app.get("/api/health", (req, res) => res.json({ status: "ok", time: new Date().toISOString() }));
+  app.get("/api/debug", async (req, res) => {
+    try {
+      await connectDB();
+      res.json({ 
+        status: "connected", 
+        env_db_key: process.env.MONGODB_DB ? "set" : "missing",
+        env_uri_key: process.env.MONGODB_URI ? "set" : "missing"
+      });
+    } catch (err) {
+      res.status(500).json({ status: "error", message: err.message });
+    }
+  });
   app.get("/api/reveal-error", (req, res) => {
     throw new Error("Visibility Test: Error reveal middleware is operational.");
   });
