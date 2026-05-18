@@ -37,6 +37,7 @@ import { Hero } from "../components/Hero";
 import { Cars } from "../components/Cars";
 import { Features } from "../components/Features";
 import { Footer } from "../components/Footer";
+import { BrandBar } from "../components/BrandBar";
 import { settingsService, reviewService } from "../services/api";
 
 // Types
@@ -305,6 +306,8 @@ export function HomePage() {
               isMobile={isMobile}
             />
           </section>
+
+          <BrandBar />
 
           <section id="gallery" className="py-20 bg-gray-100 dark:bg-gray-950">
             <div className="container mx-auto px-4">
